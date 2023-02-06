@@ -45,7 +45,7 @@ class Config(object):
             
             # Relational DBMS: PSQL, MySql
             SQLALCHEMY_DATABASE_URI = '{}://{}:{}@{}:{}/{}'.format(
-                DB_ENGINE,
+                'mysql+pymysql',
                 DB_USERNAME,
                 DB_PASS,
                 DB_HOST,

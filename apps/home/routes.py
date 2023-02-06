@@ -8,11 +8,14 @@ from flask import render_template, request
 from flask_login import login_required
 from jinja2 import TemplateNotFound
 
+from apps.authentication.models import Invoice
+
 
 @blueprint.route('/index')
 @login_required
 def index():
-
+    ds = Invoice.get_daily_total
+    ms = Invoice.get_monthly_total
     return render_template('home/index.html', segment='index')
 
 
