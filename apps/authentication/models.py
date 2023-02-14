@@ -4,10 +4,12 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 from flask_login import UserMixin
+import sys
 
 # from sqlalchemy import SQLAlchemyError
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+from sqlalchemy import ForeignKey
 
 from flask_dance.consumer.storage.sqla import OAuthConsumerMixin
 
@@ -105,7 +107,7 @@ class Invoice(db.Model):
     id            = db.Column(db.Integer, primary_key=True)
     prefijo       = db.Column(db.String(5))
     nfactura      = db.Column(db.Integer, unique=True)
-    client_id     = db.Column(db.Integer)
+    client_id     = db.Column(db.Integer, ForeignKey('clients.id'))
     user_id       = db.Column(db.Integer)
     fecha_factura = db.Column(db.DateTime)
     fecha_vencimiento = db.Column(db.DateTime)
@@ -119,6 +121,8 @@ class Invoice(db.Model):
     status_id     = db.Column(db.Integer)
     concept       = db.Column(db.Text)
     
+    cliente = relationship('Client', backref='Invoice',
+                                primaryjoin='Invoice.client_id == Client.id')
     
     def __init__(
         self, prefijo=None, 
@@ -154,12 +158,102 @@ class Invoice(db.Model):
     
     def get_daily_total():
         now = datetime.now()
-        qry = Invoice.query.with_entities(func.sum(Invoice.valor).label("daily_sales")).filter(Invoice.fecha_factura == now )
+        qry = Invoice.query.with_entities(func.sum(Invoice.valor).label("daily_sales")).filter(Invoice.fecha_factura == now ).first()[0]
+        if (qry is None):
+            qry = 0
+        print(qry)
         return qry
     
     def get_monthly_total():
-        now = datetime.today()
+        now = datetime.now()
         first_of_month = now.replace(day=1)
         qry = Invoice.query.with_entities(func.sum(Invoice.valor).label("monthly_sales")).filter(Invoice.fecha_factura >= first_of_month ).first()[0]
+        if (qry is None):
+            qry = 0
         print(qry)
         return qry
+
+    def get_yearly_total():
+        now = datetime.now()
+        first_of_month = now.replace(day=1)
+        first_of_year = first_of_month.replace(month=1)
+        qry = Invoice.query.with_entities(func.sum(Invoice.valor).label("yearly_sales")).filter(Invoice.fecha_factura >= first_of_year ).first()[0]
+        if (qry is None):
+            qry = 0
+        print(qry)
+        return qry
+
+    def invoices_this_year():
+        now = datetime.now()
+        first_of_month = now.replace(day=1)
+        first_of_year = first_of_month.replace(month=1)
+        qry = Invoice.query.distinct(Invoice.id).filter(Invoice.created >= first_of_year).count()
+        if (qry is None):
+            qry = 0
+        print(qry)
+        return qry
+
+    def clients_this_year():
+        now = datetime.now()
+        first_of_month = now.replace(day=1)
+        first_of_year = first_of_month.replace(month=1)
+        qry = Invoice.query.distinct(Invoice.client_id).filter(Invoice.created >= first_of_year).count()
+        if (qry is None):
+            qry = 0
+        print(qry)
+        return qry
+
+    def get_last_ten():
+        invoices = Invoice.query.order_by(Invoice.id.desc()).limit(10).all()
+        return invoices
+    
+    def get_last_n(n):
+        invoices = Invoice.query.order_by(Invoice.id.desc()).limit(n).all()
+        return invoices
+
+class Client(db.Model):
+    
+    __tablename__ = 'clients'
+
+    id            = db.Column(db.Integer, primary_key=True)
+    name          = db.Column(db.String(5))
+    user_id       = db.Column(db.Integer)
+    reference     = db.Column(db.String(200))
+    nit           = db.Column(db.String(20))
+    phone         = db.Column(db.String(15))
+    email         = db.Column(db.String(200))
+    active        = db.Column(db.Boolean)
+    created       = db.Column(db.DateTime)
+    modified      = db.Column(db.DateTime)
+    
+    
+    def __init__(
+        self, prefijo=None, 
+        name=None, 
+        user_id=None, 
+        reference=None,
+        nit=None, 
+        phone=None,
+        email=None, 
+        active=None, 
+        created=None,
+        modified=None):
+        self.name = name
+        self.user_id = user_id
+        self.reference = reference
+        self.nit = nit
+        self.phone = phone
+        self.email = email
+        self.active = active
+        self.created = created
+        self.modified = modified
+
+    
+    
+    def get_cllients_total():
+        qry = Client.query.distinct(Client.name).count()
+        if (qry is None):
+            qry = 0
+        print(qry)
+        return qry
+    

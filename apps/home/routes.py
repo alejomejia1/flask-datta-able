@@ -7,16 +7,38 @@ from apps.home import blueprint
 from flask import render_template, request
 from flask_login import login_required
 from jinja2 import TemplateNotFound
+from jinja_datatables.jinja_extensions.datatableext import DatatableExt
+from jinja_datatables.datatable_classes import DatatableColumn, AjaxDatatable, JSArrayDatatable, HTMLDatatable
 
-from apps.authentication.models import Invoice
+from apps.authentication.models import Invoice, Client
 
 
 @blueprint.route('/index')
 @login_required
 def index():
-    ds = Invoice.get_daily_total
-    ms = Invoice.get_monthly_total
-    return render_template('home/index.html', segment='index')
+    ds = Invoice.get_daily_total()
+    ms = Invoice.get_monthly_total()
+    ys = Invoice.get_yearly_total()
+    lf = Invoice.get_last_n(10)
+    ct = Client.get_cllients_total()
+    it = Invoice.invoices_this_year()
+    cty = Invoice.clients_this_year()
+    print(ds, ms)
+    return render_template('home/index.html', segment='index', ds = ds, ms=ms, ys=ys, lf=lf, ct=ct, it=it, cty=cty, n=10)
+
+@blueprint.route('/invoices')
+@login_required
+def invoices():
+    lis = Invoice.get_last_n(100)
+    # columns = [
+    #     DatatableColumn("data_name", "Column Name", "filter_text"),
+    # ]
+    # table_view = HTMLDatatable(
+    #     columns,
+    #     None,
+    #     None,
+    # )
+    return render_template('home/invoices.html', segment='index', lis=lis)
 
 
 @blueprint.route('/<template>')
