@@ -9,7 +9,12 @@ import sys
 # from sqlalchemy import SQLAlchemyError
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import ForeignKey
+
+from re import sub
+from decimal import Decimal
+import locale
 
 from flask_dance.consumer.storage.sqla import OAuthConsumerMixin
 
@@ -30,6 +35,7 @@ class Users(db.Model, UserMixin):
     name          = db.Column(db.String(50), nullable=True)
     group_id      = db.Column(db.Integer, nullable=True)
     role_id       = db.Column(db.Integer, nullable=True)
+    rut           = db.Column(db.String(20), nullable=True)
 
     # oauth_github  = db.Column(db.String(100), nullable=True)
 
@@ -108,7 +114,7 @@ class Invoice(db.Model):
     prefijo       = db.Column(db.String(5))
     nfactura      = db.Column(db.Integer, unique=True)
     client_id     = db.Column(db.Integer, ForeignKey('clients.id'))
-    user_id       = db.Column(db.Integer)
+    user_id       = db.Column(db.Integer, ForeignKey('users.id'))
     fecha_factura = db.Column(db.DateTime)
     fecha_vencimiento = db.Column(db.DateTime)
     fecha_proximo_pago = db.Column(db.DateTime)
@@ -123,9 +129,12 @@ class Invoice(db.Model):
     
     cliente = relationship('Client', backref='Invoice',
                                 primaryjoin='Invoice.client_id == Client.id')
+    user = relationship('Users', backref='Invoice',
+                                primaryjoin='Invoice.user_id == Users.id')
     
     def __init__(
-        self, prefijo=None, 
+        self, 
+        prefijo=None, 
         nfactura=None, 
         client_id=None, 
         user_id=None,
@@ -140,6 +149,7 @@ class Invoice(db.Model):
         modified=None,
         status_id=None,
         concept=None):
+        self.prefijo = prefijo
         self.nfactura = nfactura
         self.client_id = client_id
         self.user_id = user_id
@@ -157,8 +167,8 @@ class Invoice(db.Model):
     
     
     def get_daily_total():
-        now = datetime.now()
-        qry = Invoice.query.with_entities(func.sum(Invoice.valor).label("daily_sales")).filter(Invoice.fecha_factura == now ).first()[0]
+        now = datetime.now().strftime('%Y-%m-%d')
+        qry = Invoice.query.with_entities(func.sum(Invoice.valor).label("daily_sales")).filter(Invoice.fecha_factura == now, Invoice.anulada == False ).first()[0]
         if (qry is None):
             qry = 0
         print(qry)
@@ -166,8 +176,8 @@ class Invoice(db.Model):
     
     def get_monthly_total():
         now = datetime.now()
-        first_of_month = now.replace(day=1)
-        qry = Invoice.query.with_entities(func.sum(Invoice.valor).label("monthly_sales")).filter(Invoice.fecha_factura >= first_of_month ).first()[0]
+        first_of_month = now.replace(day=1).strftime('%Y-%m-%d')
+        qry = Invoice.query.with_entities(func.sum(Invoice.valor).label("monthly_sales")).filter(Invoice.fecha_factura >= first_of_month, Invoice.anulada == False ).first()[0]
         if (qry is None):
             qry = 0
         print(qry)
@@ -177,7 +187,7 @@ class Invoice(db.Model):
         now = datetime.now()
         first_of_month = now.replace(day=1)
         first_of_year = first_of_month.replace(month=1)
-        qry = Invoice.query.with_entities(func.sum(Invoice.valor).label("yearly_sales")).filter(Invoice.fecha_factura >= first_of_year ).first()[0]
+        qry = Invoice.query.with_entities(func.sum(Invoice.valor).label("yearly_sales")).filter(Invoice.fecha_factura >= first_of_year , Invoice.anulada == False).first()[0]
         if (qry is None):
             qry = 0
         print(qry)
@@ -210,6 +220,41 @@ class Invoice(db.Model):
     def get_last_n(n):
         invoices = Invoice.query.order_by(Invoice.id.desc()).limit(n).all()
         return invoices
+    
+    def get_last_invoice():
+        last_invoice = Invoice.query.order_by(Invoice.id.desc()).limit(1).first()
+        last_invoice_index = last_invoice.nfactura
+        return last_invoice_index
+    
+    def add_new(invoice):
+        print("Guardando nueva invoice")
+        locale.setlocale(locale.LC_ALL, 'es_CO.UTF8')
+        new_inv = Invoice(
+            prefijo            = invoice["prefijo"],
+            nfactura           = invoice["nfactura"],
+            client_id          = invoice["client_id"],
+            fecha_factura      = invoice["fecha_factura"],
+            fecha_vencimiento  = invoice["fecha_vencimiento"],
+            fecha_proximo_pago = invoice["fecha_proximo_pago"],
+            observaciones      = invoice["observaciones"],
+            concept            = invoice["concept"],
+            anulada            = invoice["anulada"],
+            user_id            = invoice["user_id"],
+            status_id          = invoice["status_id"],
+            created            = datetime.now(),
+            modified           = datetime.now(),
+            descuento          = 0,
+            valor              = locale.atof(invoice["valor"].strip("$"))
+            
+        )
+        db.session.add(new_inv)
+        db.session.commit()
+    
+    def update(invoice):
+        print("Actualizando invoice")
+        locale.setlocale(locale.LC_ALL, 'es_CO.UTF8')
+        db.session.commit()
+        
 
 class Client(db.Model):
     
@@ -256,4 +301,70 @@ class Client(db.Model):
             qry = 0
         print(qry)
         return qry
+
+    def get_clients():
+        qry = Client.query.with_entities(Client.id, Client.name).distinct(Client.name).all()
+        return qry
     
+class Contact(db.Model):
+    
+    __tablename__ = 'contacts'
+
+    id            = db.Column(db.Integer, primary_key=True)
+    client_id     = db.Column(db.Integer, ForeignKey('clients.id'))
+    user_id       = db.Column(db.Integer, ForeignKey('users.id'))
+    name          = db.Column(db.String(5))
+    cellphone     = db.Column(db.String(20))
+    address       = db.Column(db.String(200))
+    email         = db.Column(db.String(100))
+    created       = db.Column(db.DateTime)
+    modified      = db.Column(db.DateTime)
+    
+    cliente = relationship('Client', backref='Contact',
+                                primaryjoin='Contact.client_id == Client.id')
+    usuario = relationship('Users', backref='Contact',
+                                primaryjoin='Contact.user_id == Users.id')
+    
+    def __init__(
+        self, prefijo=None, 
+        client_id=None, 
+        user_id=None, 
+        name=None,
+        cellphone=None,
+        address=None,
+        email=None, 
+        created=None,
+        modified=None):
+        self.name = name
+        self.user_id = user_id
+        self.client_id = client_id
+        self.cellphone = cellphone
+        self.address = address
+        self.email = email
+        self.created = created
+        self.modified = modified
+
+    def get_contacts_list():
+        qry = Contact.query.with_entities(Contact.id, Contact.name).distinct(Contact.name).all()
+        return qry
+    
+    def get_contacts():
+        qry = Contact.query.all()
+        return qry
+
+
+class Status(db.Model):
+    
+    __tablename__ = 'statuses'
+
+    id            = db.Column(db.Integer, primary_key=True)
+    status        = db.Column(db.String(20))
+    
+    def __init__(
+        self, 
+        status=None):
+        self.status = status
+    
+    def get_statuses():
+        qry = Status.query.all()
+        return qry

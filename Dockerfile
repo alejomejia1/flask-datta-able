@@ -8,6 +8,7 @@ ENV DEBUG True
 
 COPY requirements.txt .
 
+RUN apt update && apt install -y wkhtmltopdf nano
 # install python dependencies
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt

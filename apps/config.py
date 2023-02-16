@@ -11,7 +11,7 @@ class Config(object):
 
     # Assets Management
     ASSETS_ROOT = os.getenv('ASSETS_ROOT', '/static/assets')  
-    
+    PDF_FOLDER = os.getenv('PDF_FOLDER', '/static/pdfs')
     # Set up the App SECRET_KEY
     SECRET_KEY  = os.getenv('SECRET_KEY', None)
     if not SECRET_KEY:

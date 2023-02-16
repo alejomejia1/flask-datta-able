@@ -3,7 +3,23 @@
 {% block title %} Dashboard {% endblock %} 
 
 <!-- Specific CSS goes HERE -->
-{% block stylesheets %}{% endblock stylesheets %}
+{% block stylesheets %}
+    <style>
+        .size-28{
+            width: 24px;
+            height: 24px;
+        }
+        .size-38{
+            width: 38px;
+            height: 38px;
+        }
+        .size-48{
+            width: 48px;
+            height: 48px;
+        }
+    </style>
+    <script src="https://unpkg.com/feather-icons"></script>
+{% endblock stylesheets %}
 
 {% block content %}
 
@@ -19,6 +35,28 @@
                     <div class="main-body">
                         <div class="page-wrapper">
                             <!-- [ Main Content ] start -->
+                            <div class="row">
+                                <div class="col-md-12 col-xl-12">
+                                    <div class="card daily-sales">
+                                        
+                                        <div class="card-block" style="text-align: right;">
+                                            <h6 class="mb-4" style="text-align: left;">Acciones rapidas</h6>
+                                            <!-- <div class="">
+                                                <div><a href="/new_invoice" class="nav-link"><span class=""><i class="feather icon-edit text-c-blue f-50 m-r-10"></i></span></a></div>
+                                                <div><a href="/new_contact" class="nav-link"><span class="pcoded-micon"><i class="feather icon-user-plus text-c-blue f-50 m-r-10"></i></span></a></div>
+                                            </div> -->
+                                            <div class="icon-bar i-block" style="padding-right:20px; padding-bottom:10px">
+                                                <a class="active" href="/new_invoice"><i class="fa fa-edit fa-4x" title="Nueva cuenta de cobro"></i></a>
+                                                <a href="/new_contact"><i class="fa fa-user fa-4x" title="Nuevo contacto"></i></a>
+                                                <a href="/new_client"><i class="fa fa-building fa-4x" title="Nuevo cliente"></i></a>
+                                              </div>
+                                              <!-- <br> -->
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
                             <div class="row">
                                 <!--[ daily sales section ] start-->
                                 <div class="col-md-6 col-xl-4">
@@ -105,11 +143,11 @@
                                                     <tbody>
                                                         {% for register in lf %}
                                                             <tr>
-                                                                <td>{{ register.fecha_factura }}</td>
-                                                                <td>{{ register.prefijo }}-{{ register.nfactura }}</td>
-                                                                <td>{{ register.cliente.name }}</td>
-                                                                <td>{{ register.concept }}</td>
-                                                                <td style="text-align:right">{{ "${:,.2f}".format(register.valor)  }}</td>
+                                                                <td>{{ register.fecha_factura  | safe}}</td>
+                                                                <td>{{ register.prefijo }}-{{ register.nfactura  | safe}}</td>
+                                                                <td>{{ register.cliente.name  | safe}}</td>
+                                                                <td>{{ register.concept  | safe}}</td>
+                                                                <td style="text-align:right">{{ "${:,.2f}".format(register.valor) | safe }}</td>
                                                             </tr>
                                                         {% endfor %}
                                                     

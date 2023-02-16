@@ -1,6 +1,6 @@
 {% extends "layouts/base.html" %}
 
-{% block title %} Cuentas de Cobro {% endblock %} 
+{% block title %} Clientes {% endblock %} 
 
 <!-- Specific CSS goes HERE -->
 {% block stylesheets %}{% endblock stylesheets %}
@@ -17,17 +17,17 @@
                     <div class="page-header">
                         <div class="page-block">
                             <div class="row align-items-center">
-                                <div class="col-md-9">
+                                <div class="col-md-12">
                                     <div class="page-header-title">
-                                        <h5 class="m-b-10">Cuentas de Cobro </h5>
+                                        <h5 class="m-b-10">Contactos </h5>
                                     </div>
+                                    <!--
                                     <ul class="breadcrumb">
                                         <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
-                                        <li class="breadcrumb-item"><a href="javascript:">Cuentas de Cobro</a></li>                            
+                                        <li class="breadcrumb-item"><a href="javascript:">Form Componants</a></li>
+                                        <li class="breadcrumb-item"><a href="javascript:">Form Elements</a></li>
                                     </ul>
-                                </div>
-                                <div class="col-md-3">
-                                    <a type="button" class="btn btn-primary" href="/new_invoice">Nueva cuenta de cobro</a>
+                                    -->
                                 </div>
                             </div>
                         </div>
@@ -40,26 +40,22 @@
                                 <table id="data" class="table table-striped">
                                     <thead>
                                       <tr>
-                                        <th>Fecha</th>
-                                        <th>CC</th>
-                                        <th>Cliente</th>
-                                        <th>Concepto</th>
-                                        <th>Valor</th>
-                                        <th>Accion </th>
+                                        <th>Nombre</th>
+                                        <th>Empresa</th>
+                                        <th>Telefono</th>
+                                        <th>email</th>
+                                        <th>Direccion</th>
                                       </tr>
                                     </thead>
                                     <tbody>
-                                      {% for invoice in lis %}
+                                      {% for contact in contacts %}
                                         <tr>
-                                          <td>{{ invoice.fecha_factura }}</td>
-                                          <td>{{ invoice.prefijo }}-{{ invoice.nfactura }}</td>
-                                          <td>{{ invoice.cliente.name }}</td>
-                                          <td>{{ invoice.concept }}</td>
-                                          <td style="text-align:right">{{ invoice.valor }}</td>
-                                          <td> 
-                                            <a class="active" href="/edit_invoice/{{ invoice.id }}"><i class="fa fa-edit fa-1x" title="Editar cuenta de cobro"></i></a>
-                                            <a class="" href="/invoices_pdf/{{ invoice.id }}"><i class="fa fa-download fa-1x" title="Descargar cuenta de cobro"></i></a>
-                                          </td>
+                                          
+                                          <td>{{ contact.name }}</td>
+                                          <td>{{ contact.cliente.name }}</td>
+                                          <td>{{ contact.phone }}</td>
+                                          <td>{{ contact.email }}</td>
+                                          <td>{{ contact.address }}</td>
                                           
                                         </tr>
                                       {% endfor %}
@@ -83,18 +79,7 @@
 
   <script>
     $(document).ready(function () {
-      $('#data').DataTable({
-        order: [[0, 'desc']],
-        // dom: 'Bfrtip',
-        buttons: [
-            {
-                text: 'Nueva CxC',
-                action: function ( e, dt, node, config ) {
-                    alert( 'Nueva cuenta de cobro' );
-                }
-            }
-        ]
-      });
+      $('#data').DataTable();
     });
   </script>
 

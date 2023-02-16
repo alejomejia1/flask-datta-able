@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <title>Cuenta de Cobro</title>
+        <link rel="stylesheet" href="factura.css" >
+    </head>
+
+    <style>
+        body {
+            position:absolute;
+            top:0;
+            left:40%;
+            /*width:595px;*/
+            /*height:841px;*/
+            width: 1027px;
+            height: 1280px;
+            margin: -25px 0 0 /*-297px*/-397px;
+            /* border-style:outset; */
+            /* border: 1px solid #000; */
+            /*overflow:hidden;*/
+        }
+        
+        .cls2 {
+            /*position:absolute;*/
+            /*left:0;*/
+            /*top:0;*/
+            width: 100%;
+            height: 100%;
+        }
+        
+        .wrapper {
+            width: 90%;
+            height: 803px;
+            margin: 38px 28px 0 47px;
+        
+            /*background: red;*/
+        }
+        
+        .header {
+        
+        }
+        
+        .logo {
+            width: 149px;
+            height: 43px;
+            float: left;
+            background: url('logo.png');
+        }
+
+        .firmaDiv {
+            position:absolute;
+            top:50px;
+            left:0px;
+        }
+        
+        .black {
+            position: relative;
+            left: 28px;
+            width: 300px;
+            height: 43px;
+            float: right;
+        
+            background: #000;
+        }
+        
+        .black p {
+            margin: 0.45em 1em;
+        
+            color: #c6c6c6;
+            font: 16pt 'Corbel', sans-serif;
+        }
+        
+        .black:after {
+            clear: both;
+            width: 100%;
+            height: 1px;
+            content: '.';
+            visibility: hidden;
+        }
+        
+        .cls03 {
+            padding: 0 0 0 0;
+        }
+        
+        .t01 {
+            width: 100%;
+        
+            border: none;
+            border-bottom: .13em solid #aaaaaa;
+        }
+        
+        .t01 tr td {
+            width: 196px;
+            /*line-height: 20px;*/
+        }
+        
+        .date, .number {
+            font: 12pt 'Corbel', sans-serif;
+            font-weight: bold;
+        }
+        
+        .rekins {
+            font: 16pt 'Corbel', sans-serif;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-align: center;
+        }
+        
+        .number {
+            text-align: right;
+        }
+        
+        .pers {
+            margin: -20px 0 0 20px;
+        }
+        
+        .names {
+            width: 500px;
+            height: 20px;
+            margin: 30px 0 0 0;
+        }
+        
+        .names span {
+            font: 12pt 'Corbel', sans-serif;
+            color: #aaaaaa;
+        }
+        
+        .t02 {
+            float: left;
+        
+            font: 11pt 'Corbel', sans-serif;
+        }
+        
+        .t03 {
+            float: right;
+        }
+    </style>
+    <body>
+        div class="cls2">
+
+        <div class="wrapper">
+
+            <div class="header">
+
+                <div class="row">
+                    <div class="col-md-4">
+                        {{ fecha }}
+                    </div>
+                </div>
+                <hr>
+                <div class="logo"></div>
+
+                
+                <div class="cls03">
+
+                    <p align="center" >
+                        
+                    </p>
+                    <br>
+                    <p align="center" >
+                        <strong style="font-size:2.5rem"> Cuenta de Cobro {{ invoice.prefijo }}-{{ invoice.nfactura }}</strong> <br><br>
+                        <strong style="font-size:2.5rem"> {{ invoice.cliente.name }}</strong> <br>
+                        <strong>Nit: {{ invoice.cliente.nit }}</strong>
+                    </p>
+                    
+                    <br><br><br>
+            
+                    <p align="center">
+                        <strong style="font-size:1.5rem">DEBE A:</strong>
+                    </p>
+            
+                    <p align="center">
+                        <strong style="font-size:1.5rem">   {{ username }} </strong> <br>
+                        RUT : {{ invoice.user.rut }}
+                    </p>
+                    <br><br><br>
+                    <p align="center">
+                        <strong style="font-size:1.5rem">LA SUMA DE:</strong>
+                    </p>
+                    <p align="center">
+                        <strong></strong>
+                    </p>
+                    <p align="center" style="font-size:1.5rem">
+                        {{ valor_letras }} <br>
+                        {{ valor }}
+                    </p>
+            
+                    <br><br>
+                    
+                    <p align="center">
+                        <strong style="font-size:1.5rem">POR CONCEPTO DE: </strong>
+                    </p>
+                    <p align="center" style="font-size:1.5rem">
+                        {{ invoice.concept }}
+                    </p>
+                    
+                    <br><br>
+            
+                    <p align="justify">
+                        <strong>OBSERVACIONES: </strong>
+                        {{ invoice.observaciones }}
+                    </p>
+            
+                    <br><br><br>
+            
+                    <div style="position:relative;text-align: left" class="firmaDiv">
+            
+                        <img src="http://sing.com.co/alejo/img/firma.png" class="firma" style="position:absolute;top:-50px" width="200px">
+                        <br>
+                        ______________________ <br>
+                        Alejandro Mejia Ayala   <br>
+                        RUT 73146795-1 <br>
+                        Dir : Cra 58 # 134A 52 Bloque 1 Apto 202 <br>
+                        Celular : 315 7520662 <br>
+                        Nota: Hacer la consignacion o transferencia en Banco ITAU, Cuenta de Ahorros 291241451
+                    </div>
+                </div>
+            </div>
+        </div>
+          
+        
+    </body>
+</html>
