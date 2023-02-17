@@ -1,6 +1,6 @@
 {% extends "layouts/base.html" %}
 
-{% block title %} SING - Nueva CC{% endblock %} 
+{% block title %} SING - Nuevo Contacto {% endblock %} 
 
 <!-- Specific CSS goes HERE -->
 {% block stylesheets %}{% endblock stylesheets %}
@@ -19,12 +19,12 @@
                             <div class="row align-items-center">
                                 <div class="col-md-12">
                                     <div class="page-header-title">
-                                        <h5 class="m-b-10"> Nueva cuenta de cobro </h5>
+                                        <h5 class="m-b-10"> Nuevo Contacto </h5>
                                     </div>
                                     <ul class="breadcrumb">
                                         <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
-                                        <li class="breadcrumb-item"><a href="javascript:">Cuentas de Cobro</a></li>
-                                        <li class="breadcrumb-item"><a href="javascript:">Nueva cuenta de cobro</a></li>
+                                        <li class="breadcrumb-item"><a href="javascript:">Contactos</a></li>
+                                        <li class="breadcrumb-item"><a href="javascript:">Nuevo Contacto</a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -39,89 +39,63 @@
                                     <div class="card">
                                         <div class="card-header">
                                             
-                                            
+                                            <h5> Datos del Contacto </h5>
                                         </div>
                                         <div class="card-body">
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <form  method="POST" action="/new_invoice">
+                                                    <form  method="POST" action="/new_client">
                                                         {{ form.csrf_token }}
                                                         
-                                                        <div >
+                                                        <div hidden>
                                                             {{ form.user_id }}
                                                         </div>
                                                         
-                                                        
                                                         <div class="row">
-                                                            <div class="col-md-9"style="text-align:right" >
-                                                                <h5>Cuenta de Cobro # </h5>
-                                                            </div>
-                                                            <div class="col-md-3 form-inline mb-2" style="text-align:right">
-                                                                <h5 style="color:red" style="text-align:center">
-                                                                    <span>{{ form.prefijo(class='form-control w-25') }}</span> - <span>{{ form.nfactura(class='form-control w-25',  maxlength="4") }}</span>
-                                                                </h5>
+                                                            <div class="col-md-12">
+                                                                <div class="form-group">
+                                                                    <label>Nombre : </label>
+                                                                    {{ form.name(class='form-control') }}
+                                                                </div>
                                                             </div>
                                                         </div>
-
                                                         <div class="row">
-                                                            <div class="col-md-4">
+                                                            <div class="col-md-6">
                                                                 <div class="form-group">
-                                                                    <label>Fecha Factura : </label>
-                                                                    {{ form.fecha_factura(class='form-control datepicker') }}
+                                                                    {{ form.client_id.label  }}
+                                                                    {{ form.client_id(class_="form-control") }}
+                                                                    <small id="client_id_help" class="form-text text-muted">Cada contacto debe relacionarse con un cliente.</small>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-4">
-                                                                <div class="form-group">
-                                                                    <label>Fecha Vencimiento : </label>
-                                                                    {{ form.fecha_vencimiento(class='form-control datepicker') }}
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-4">
-                                                                <div class="form-group">
-                                                                    <label>Fecha Prox Pago : </label>
-                                                                    {{ form.fecha_proximo_pago(class='form-control datepicker') }}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        
-                        
-                                                        <div class="form-group">
-                                                            {{ form.client_id.label  }}
-                                                            {{ form.client_id(class_="form-control") }}
-                                                            <small id="client_id_help" class="form-text text-muted">Cada cuenta de cobro debe relacionarse con un cliente.</small>
-                                                        </div>
-
-                                                        <div class="form-group">
-                                                            <label>Concepto</label>
-                                                            {{ form.concept(class_="form-control") }}
-                                                        </div>
-                                                        
-                                                        <div class="form-group">
-                                                            <label>Observaciones</label>
-                                                            {{ form.observaciones(class_="form-control",cols="35", rows="5") }}
-                                                        </div>
-
-                                                        <div class="form-group" >
-                                                            <label>Valor</label>
-                                                            {{ form.valor(class_="form-control",style="text-align:right", onBlur="toFinalNumberFormat(this)") }}
                                                         </div>
 
                                                         <div class="row">
-                                                            <div class="col-md-3">
-                                                                <div class="form-group" >
-                                                                    <label>Status</label>
-                                                                    {{ form.status_id(class_="form-control") }}
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <label>Celular : </label>
+                                                                    {{ form.cellphone(class='form-control') }}
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-3">
-                                                                <div class="form-group" >
-                                                                    <label>Anulada</label>
-                                                                    {{ form.anulada }}
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <label>eMail (Alias) : </label>
+                                                                    {{ form.email(class='form-control') }}
+                                                                </div>
+                                                            </div>
+                                                            
+                                                        </div>
+                                                        
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group">
+                                                                    <label>Direccion : </label>
+                                                                    {{ form.address(class='form-control') }}
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         
+
+
                                                         <div class="row">
                                                             <div class="col-md-10">
                                                                 {{ form.errors }}

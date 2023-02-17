@@ -10,8 +10,9 @@ from jinja2 import TemplateNotFound, Environment, PackageLoader, select_autoesca
 from jinja_datatables.jinja_extensions.datatableext import DatatableExt
 from jinja_datatables.datatable_classes import DatatableColumn, AjaxDatatable, JSArrayDatatable, HTMLDatatable
 
-from apps.authentication.models import Invoice, Client, Contact, Users
-from apps.home.forms import NewInvoice
+from apps.home.models import Invoice, Client, Contact
+from apps.authentication.models import Users
+from apps.home.forms import NewInvoice, NewClient, NewContact
 from apps.home.numero_letras import *
 
 import locale
@@ -103,6 +104,41 @@ def new_invoice():
     form.anulada.data = False
     
     return render_template('home/form_new_invoice.html', segment='index', form=form)
+    
+@blueprint.route('/new_client', methods=['GET', 'POST'])
+@login_required
+def new_client():
+    form = NewClient()
+    if form.validate_on_submit():
+        session['form'] = form.data
+        return redirect(url_for('home_blueprint.store_client'))
+    # form.user_id.data = current_user.id
+    return render_template('home/form_new_client.html', segment='index', form=form)
+    
+@blueprint.route('/store_client')
+@login_required
+def store_client():
+    client = session['form']
+    store = Client.add_new(client)
+    return redirect(url_for('home_blueprint.index'))
+
+@blueprint.route('/new_contact', methods=['GET', 'POST'])
+@login_required
+def new_contact():
+    form = NewContact()
+    if form.validate_on_submit():
+        session['form'] = form.data
+        return redirect(url_for('home_blueprint.store_contact'))
+    # form.user_id.data = current_user.id
+    return render_template('home/form_new_contact.html', segment='index', form=form)
+    
+@blueprint.route('/store_contact')
+@login_required
+def store_contacct():
+    contact = session['form']
+    store = Contact.add_new(contact)
+    return redirect(url_for('home_blueprint.index'))
+
     
 @blueprint.route('/edit_invoice/<id>', methods=['GET', 'POST'])
 @login_required

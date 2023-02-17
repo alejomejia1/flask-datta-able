@@ -14,6 +14,7 @@ RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY env.sample .env
+COPY db.env.sample .db.env
 
 COPY . .
 
