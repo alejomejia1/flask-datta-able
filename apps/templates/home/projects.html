@@ -1,0 +1,115 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Proyectos {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <!-- [ Main Content ] start -->
+    <div class="pcoded-main-container">
+        <div class="pcoded-wrapper">
+
+            <div class="pcoded-content">
+                <div class="pcoded-inner-content">
+                    <!-- [ breadcrumb ] start -->
+                    <div class="page-header">
+                        <div class="page-block">
+                            <div class="row align-items-center">
+                                <div class="col-md-12">
+                                    <div class="page-header-title">
+                                        <h5 class="m-b-10">Proyectos </h5>
+                                    </div>
+                                    <!--
+                                    <ul class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="javascript:">Form Componants</a></li>
+                                        <li class="breadcrumb-item"><a href="javascript:">Form Elements</a></li>
+                                    </ul>
+                                    -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- [ breadcrumb ] end -->
+                    <div class="main-body">
+                        <div class="page-wrapper">
+                            <div class="row">
+
+                                <table id="data" class="table table-striped">
+                                    <thead>
+                                      <tr>
+                                        <th>Nombre</th>
+                                        <th>Descripcion</th>
+                                        <th>Cliente</th>
+                                        <th>Inicio</th>
+                                        <th>Termino</th>
+                                        <th>Activo</th>
+                                        <th>Facturación</th>
+                                    
+                                      </tr>
+                                    </thead>
+                                    <tbody>                                
+                                      {% for project in projects %}
+                                        <tr>
+                                          <td>{{ project.name }}</td>
+                                          <td>{{ project.description }}</td>
+                                          <td>{{ project.cliente.name }}</td>
+                                          <td>{{ project.start_date }}</td>
+                                          <td>{{ project.end_date }}</td>
+                                          <td>{{ project.active }}</td>
+                                          <td>{{ project.total_invoices }}</td>
+                                        </tr>
+                                      {% endfor %}
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- [ Main Content ] end -->
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script>
+    $(document).ready(function () {
+      $('#data').DataTable({
+        scrollY:        "300px",
+        scrollX:        true,
+        scrollCollapse: true,
+        columnDefs: [
+            {
+              render: function (data, type, full, meta) {
+                  return "<div class='text-wrap width-100'>" + data + "</div>";
+              },
+              targets: 0
+            },
+            {
+              render: function (data, type, full, meta) {
+                  return "<div class='text-wrap width-1500'>" + data + "</div>";
+              },
+              targets: 1
+            },
+            { width: "100px", targets: [0,3] },
+            {
+              render: $.fn.dataTable.render.number( ',', '.', 2, '$ ' ),
+              targets: 6
+            }
+            
+            
+        ],
+        fixedColumns: true
+      });
+    });
+  </script>
+
+{% endblock javascripts %}

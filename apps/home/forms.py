@@ -3,13 +3,14 @@ from flask_login import current_user
 from wtforms import StringField, IntegerField, SelectField, DateField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, NumberRange
 from wtforms.widgets import TextArea
-from apps.home.models import Invoice, Client, Status
+from apps.home.models import Invoice, Client, Status, Project
 from datetime import datetime, timedelta
 
 class NewInvoice(FlaskForm):
     prefijo = StringField('prefijo', validators=[DataRequired()])
     nfactura = IntegerField('nfactura', validators=[DataRequired()])
     client_id = SelectField('client_id', validators=[DataRequired()], coerce=int)
+    project_id = SelectField('project_id', validators=[DataRequired()], coerce=int)
     fecha_factura = DateField('fecha_factura', format='%Y-%m-%d', default=datetime.today, validators=[DataRequired()])
     fecha_vencimiento = DateField('fecha_vencimiento', validators=[DataRequired()])
     fecha_proximo_pago = DateField('fecha_proximo_pago', validators=[DataRequired()])
@@ -23,8 +24,9 @@ class NewInvoice(FlaskForm):
     
     def __init__(self):
         super(NewInvoice, self).__init__()
-        self.client_id.choices = [(c.id, c.name) for c in Client.query.all()]
+        self.client_id.choices = [(0, 'Seleccione el cliente')] + [(c.id, c.name) for c in Client.query.all()]
         self.status_id.choices = [(c.id, c.status) for c in Status.query.all()]
+        self.project_id.choices = [(0, 'Seleccione uno')] + [(c.id, c.name) for c in Project.query.all()]
         print(self.client_id.choices)
         self.client_id.label = "Cliente"
         self.fecha_factura.data = datetime.today()
@@ -60,7 +62,24 @@ class NewContact(FlaskForm):
         self.user_id.data = current_user.id
         self.client_id.choices = [(c.id, c.name) for c in Client.query.all()]
         self.client_id.label = "Cliente"
+
+class NewProject(FlaskForm):
+    name = StringField('name', validators=[DataRequired()])
+    description = StringField('description', widget=TextArea(), validators=[])
+    user_id = IntegerField('user_id', validators=[DataRequired()])
+    client_id = SelectField('client_id', validators=[DataRequired()], coerce=int)
+    start_date = DateField('start_date', format='%Y-%m-%d', default=datetime.today, validators=[DataRequired()])
+    end_date = DateField('end_date', validators=[DataRequired()])
+    active = BooleanField('anulada', validators=[], default=True)
+    submit = SubmitField('Enviar')
     
+    def __init__(self):
+        super(NewProject, self).__init__()
+        self.user_id.data = current_user.id
+        self.client_id.choices = [(c.id, c.name) for c in Client.query.all()]
+        self.client_id.label = "Cliente"
+
+
     
     
     

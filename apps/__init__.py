@@ -6,6 +6,7 @@ Copyright (c) 2019 - present AppSeed.us
 import os
 
 from flask import Flask
+from flask_charts import GoogleCharts
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from importlib import import_module
@@ -13,12 +14,12 @@ from importlib import import_module
 
 db = SQLAlchemy()
 login_manager = LoginManager()
-
+charts = GoogleCharts()
 
 def register_extensions(app):
     db.init_app(app)
     login_manager.init_app(app)
-
+    charts.init_app(app)
 
 def register_blueprints(app):
     for module_name in ('authentication', 'home'):

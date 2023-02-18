@@ -3,14 +3,15 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 import sys
 
 # from sqlalchemy import SQLAlchemyError
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, column_property, Session
 from sqlalchemy.sql import func
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import ForeignKey
+from sqlalchemy_utils import aggregated
+from sqlalchemy import ForeignKey, select
 
 from re import sub
 from decimal import Decimal
@@ -33,6 +34,7 @@ class Invoice(db.Model):
     nfactura      = db.Column(db.Integer, unique=True)
     client_id     = db.Column(db.Integer, ForeignKey('clients.id'))
     user_id       = db.Column(db.Integer, ForeignKey('users.id'))
+    project_id    = db.Column(db.Integer, ForeignKey('projects.id'))
     fecha_factura = db.Column(db.DateTime)
     fecha_vencimiento = db.Column(db.DateTime)
     fecha_proximo_pago = db.Column(db.DateTime)
@@ -49,7 +51,11 @@ class Invoice(db.Model):
                                 primaryjoin='Invoice.client_id == Client.id')
     user = relationship('Users', backref='Invoice',
                                 primaryjoin='Invoice.user_id == Users.id')
+    project = relationship('Project', backref='Invoice',
+                                primaryjoin='Invoice.project_id == Project.id')
     
+    
+        
     def __init__(
         self, 
         prefijo=None, 
@@ -179,7 +185,7 @@ class Client(db.Model):
     __tablename__ = 'clients'
 
     id            = db.Column(db.Integer, primary_key=True)
-    name          = db.Column(db.String(5))
+    name          = db.Column(db.String(200))
     user_id       = db.Column(db.Integer)
     reference     = db.Column(db.String(200))
     nit           = db.Column(db.String(20))
@@ -212,6 +218,21 @@ class Client(db.Model):
         self.modified = modified
 
     
+    def add_new(client):
+        print("Guardando nuevo cliente")
+        locale.setlocale(locale.LC_ALL, 'es_CO.UTF8')
+        new_cli = Client(
+            name               = client["name"],
+            user_id            = client["user_id"],
+            reference          = client["reference"],
+            nit                = client["nit"],
+            phone              = client["phone"],
+            email              = client["email"],
+            created            = datetime.now(),
+            modified           = datetime.now(),            
+        )
+        db.session.add(new_cli)
+        db.session.commit()
     
     def get_cllients_total():
         qry = Client.query.distinct(Client.name).count()
@@ -222,6 +243,10 @@ class Client(db.Model):
 
     def get_clients():
         qry = Client.query.with_entities(Client.id, Client.name).distinct(Client.name).all()
+        return qry
+
+    def get_clients_list():
+        qry = Client.query.with_entities(Client.id, Client.reference).distinct(Client.name).all()
         return qry
     
 class Contact(db.Model):
@@ -270,6 +295,22 @@ class Contact(db.Model):
         qry = Contact.query.all()
         return qry
 
+    def add_new(contact):
+        print("Guardando nuevo contacto")
+        locale.setlocale(locale.LC_ALL, 'es_CO.UTF8')
+        new_con = Contact(
+            name               = contact["name"],
+            user_id            = contact["user_id"],
+            client_id          = contact["client_id"],
+            cellphone          = contact["cellphone"],
+            email              = contact["email"],
+            address            = contact["address"],
+            created            = datetime.now(),
+            modified           = datetime.now(),            
+        )
+        db.session.add(new_con)
+        db.session.commit()
+
 
 class Status(db.Model):
     
@@ -293,9 +334,9 @@ class Project(db.Model):
     __tablename__ = 'projects'
 
     id            = db.Column(db.Integer, primary_key=True)
-    name          = db.Column(db.String(5))
+    name          = db.Column(db.String(255))
     description   = db.Column(db.Text, nullable=True)
-    user_id       = db.Column(db.Integer, ForeignKey('clients.id'))
+    user_id       = db.Column(db.Integer, ForeignKey('users.id'))
     client_id     = db.Column(db.Integer, ForeignKey('clients.id'))
     start_date    = db.Column(db.Date);
     end_date      = db.Column(db.Date, nullable=True)
@@ -303,11 +344,22 @@ class Project(db.Model):
     created       = db.Column(db.DateTime)
     modified      = db.Column(db.DateTime)
     
-    cliente = relationship('Client', backref='Contact',
-                                primaryjoin='Contact.client_id == Client.id')
-    user    = relationship('Users', backref='Contact',
-                                primaryjoin='Contact.user_id == Users.id')
+    cliente = relationship('Client', backref='Project',
+                                primaryjoin='Project.client_id == Client.id')
+    user    = relationship('Users', backref='Project',
+                                primaryjoin='Project.user_id == Users.id')
+    
+    ninvoices = column_property(
+        select(func.count(Invoice.id)).where(Invoice.project_id == id).scalar_subquery()
+    )
+    
+    total_invoices = column_property(
+        select(func.sum(Invoice.valor)).where(Invoice.project_id == id).scalar_subquery()
+    )
+    
+    invoices = relationship('Invoice', 
+                            primaryjoin='Invoice.project_id == Project.id', viewonly = True)
     
     def get_projects():
-        qry = Project.query.all()
+        qry = Project.query.filter(Project.user_id == current_user.id).all()
         return qry
