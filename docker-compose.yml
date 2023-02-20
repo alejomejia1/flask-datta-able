@@ -1,22 +1,57 @@
 version: '3.8'
 services:
+  base:
+    build: .
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    command: 'false'
   mysql_db:
     container_name: 'mysql_db'
-    image: mysql:5.7
+    image: mysql:8.0
     ports:
       - '3406:3306'
-    env_file: .db.env
+    environment:
+      MYSQL_ROOT_PASSWORD: password4root
+      MYSQL_DATABASE: sing_sgp
+      MYSQL_USER: sing
+      MYSQL_PASSWORD: Al3j0@17
+      MYSQL_ROOT_HOST: '%'
+      TZ: "America/Bogota"
+    volumes:
+      - ./db:/var/lib/mysql
+      - './mysql/my.cnf:/etc/mysql/my.cnf'
+      - './mysql/my.cnf:/etc/mysql/conf.d/my.cnf'
     networks:
       - db_network
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
   sing-app:
-    container_name: sing_app
+    container_name: 'sing-app'
+    extends:
+      service: base
     restart: always
     build: .
+    links:
+      - mysql_db
     networks:
       - db_network
       - web_network
     depends_on: 
-      - mysql_db
+      mysql_db:
+        condition: service_healthy
+    command: sh -c "/wait && gunicorn --config gunicorn-cfg.py run:app" 
+    environment:
+      - WAIT_HOSTS=mysql_db:3306
+      - WAIT_HOSTS_TIMEOUT=300
+      - WAIT_SLEEP_INTERVAL=30
+      - WAIT_HOST_CONNECT_TIMEOUT=30
+      - TZ:"America/Bogota"
+
   nginx:
     container_name: nginx
     restart: always
@@ -27,8 +62,31 @@ services:
       - ./nginx:/etc/nginx/conf.d
     networks:
       - web_network
+    environment:
+      - TZ:"America/Bogota"
     depends_on: 
       - sing-app
+
+  migrations:
+    extends:
+      service: base
+    command:
+      - /bin/sh
+      - -c
+      - |
+        flask db init
+        flask db migrate
+        flask db upgrade
+        flask seed run
+    links:
+      - mysql_db
+    networks:
+      - db_network
+    depends_on:
+      mysql_db:
+        condition: service_healthy
+volumes:
+  db:
 networks:
   db_network:
     driver: bridge

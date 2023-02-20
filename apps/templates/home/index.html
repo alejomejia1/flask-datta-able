@@ -211,18 +211,7 @@
                                 </div>
                                 <!-- [ statistics year chart ] end -->
                                 
-                                <div class="row">
-                                    <div class="col-xl-12 col-md-12">
-                                        <div class="card">
-                                            <div class="card-header">
-                                                <h5>Ingresos por cliente</h5>
-                                            </div>
-                                            <div class="card-block">
-                                                {{ my_chart() }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                
                                 
                                 <div class="row">
                                     <div class="col-xl-12 col-md-12">
@@ -295,6 +284,7 @@
                 label: 'Ingresos por Cliente',
                 data: chartvalues,
                 fill: false,
+                barThickness: "flex",
                 backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',
                 'rgba(255, 159, 64, 0.2)',
@@ -318,10 +308,11 @@
         }
 
         new Chart(document.getElementById("myCanvas"), {
-            type: 'bar',
+            type: 'horizontalBar',
             data: data,
             options: {
                 indexAxis: 'y',
+                maintainAspectRatio: false,
             }
         });
 

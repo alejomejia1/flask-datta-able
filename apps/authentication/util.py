@@ -24,7 +24,7 @@ def hash_pass(password):
 def verify_pass(provided_password, stored_password):
     """Verify a stored password against one provided by user"""
 
-    stored_password = stored_password.decode('ascii')
+    stored_password = stored_password
     salt = stored_password[:64]
     stored_password = stored_password[64:]
     pwdhash = hashlib.pbkdf2_hmac('sha512',

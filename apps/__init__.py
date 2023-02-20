@@ -10,16 +10,20 @@ from flask_charts import GoogleCharts
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from importlib import import_module
+from flask_seeder import FlaskSeeder
 
 
 db = SQLAlchemy()
 login_manager = LoginManager()
 charts = GoogleCharts()
+seeder = FlaskSeeder()
 
 def register_extensions(app):
     db.init_app(app)
+    seeder.init_app(app, db)
     login_manager.init_app(app)
     charts.init_app(app)
+    
 
 def register_blueprints(app):
     for module_name in ('authentication', 'home'):

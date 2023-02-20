@@ -4,7 +4,7 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 from apps.home import blueprint
-from flask import render_template, request, session, redirect, url_for, make_response
+from flask import render_template, request, session, redirect, url_for, make_response, abort
 from flask_login import login_required, current_user, login_user
 from flask_charts import GoogleCharts, Chart
 from jinja2 import TemplateNotFound, Environment, PackageLoader, select_autoescape
@@ -13,7 +13,7 @@ from jinja_datatables.datatable_classes import DatatableColumn, AjaxDatatable, J
 
 from apps.home.models import Invoice, Client, Contact, Project
 from apps.authentication.models import Users
-from apps.home.forms import NewInvoice, NewClient, NewContact, NewProject
+from apps.home.forms import NewInvoice, NewClient, NewContact, NewProject, UserForm
 from apps.home.numero_letras import *
 
 from sqlalchemy.sql import func
@@ -56,23 +56,23 @@ def index():
         ingreso_labels.append(income[0])
         ingreso_values.append(income[1])
         
-    my_chart = Chart("BarChart", "my-chart")   
-    my_chart.options = {
-        "title": "Clientes",
-        "width": "100%",
-        "height": "400px",
-    }
-    my_chart.data.add_column("string", "Client")    
-    my_chart.data.add_column("number", "Ingresos")
+    # my_chart = Chart("BarChart", "my-chart")   
+    # my_chart.options = {
+    #     "title": "Clientes",
+    #     "width": "100%",
+    #     "height": "400px",
+    # }
+    # my_chart.data.add_column("string", "Client")    
+    # my_chart.data.add_column("number", "Ingresos")
     
-    hdata = []
-    for income in incomes:
-        my_chart.data.add_row([income[0], income[1]])
-        hdata.append(income[1])
+    # hdata = []
+    # for income in incomes:
+    #     my_chart.data.add_row([income[0], income[1]])
+    #     hdata.append(income[1])
     
     
     print(ds, ms)
-    return render_template('home/index.html', segment='index', ds = ds, ms=ms, ys=ys, lf=lf, ct=ct, it=it, cty=cty, n=10, ingresos=ingresos , ingreso_labels=ingreso_labels, ingreso_values= ingreso_values, clientes=clientes, my_chart=my_chart)
+    return render_template('home/index.html', segment='index', ds = ds, ms=ms, ys=ys, lf=lf, ct=ct, it=it, cty=cty, n=10, ingresos=ingresos , ingreso_labels=ingreso_labels, ingreso_values= ingreso_values, clientes=clientes)
 
 @blueprint.route('/invoices')
 @login_required
@@ -87,6 +87,29 @@ def projects():
     projects = Project.query.all()
     return render_template('home/projects.html', segment='index', projects=projects)
 
+@blueprint.route('/profile/<id>', methods=['GET', 'POST'])
+@login_required
+def profile(id):
+    user = Users.query.get(id)
+    if user is None:
+        abort(403)
+    form = UserForm(obj=user)
+    if form.validate_on_submit():
+        form.populate_obj(user)
+        db.session.commit()
+        return redirect(url_for('home_blueprint.index'))
+
+    return render_template('home/profile.html', segment='index', user=user, form=form)
+
+# @blueprint.route('/update_profile', methods=['POST'])
+# @login_required
+# def update_profile():
+#     locale.setlocale(locale.LC_ALL, 'es_CO.UTF8')
+#     # user = Users.query.get(current_user.id)
+#     user = session['form']['data']
+#     Users.update(user)
+#     db.session.commit()
+#     return redirect(url_for('home_blueprint.index'))
 
 @blueprint.route('/invoices_pdf/<id>')
 @login_required
@@ -96,7 +119,7 @@ def invoice_pdf(id):
     invoice = Invoice.query.filter(Invoice.id == id).first()
     numeroLetras = numero_a_letras(invoice.valor) + " de Pesos"
     fechaLetras = invoice.fecha_factura.strftime('%B %d  de %Y')
-    username = current_user.name
+    username = current_user.first_name + " " + current_user.last_name
     valor = format_currency(invoice.valor,'COP',locale="es_CO")
     rendered = render_template('pdf/invoice.html', segment='index', invoice=invoice, valor=valor, valor_letras = numeroLetras.capitalize(), fecha = fechaLetras.capitalize(), username = username)
     options={
@@ -109,7 +132,7 @@ def invoice_pdf(id):
     
     response = make_response(pdf)
     response.headers['Content-Type'] = 'application/pdf'
-    disposition  = 'attachment; filename=' + file_name
+    disposition  = 'inline; filename=' + file_name
     response.headers['Content-Disposition'] = disposition
     # attachment
     return response
@@ -156,7 +179,7 @@ def edit_client(id):
     form = NewClient()
     if form.validate_on_submit():
         session['form'] = form.data
-        return redirect(url_for('home_blueprint.update_invoice', id = client.id))
+        return redirect(url_for('home_blueprint.update_client', id = client.id))
     if request.method == 'GET':
         form.name.data = client.prefijo
         form.user_id.data = client.nfactura
@@ -198,7 +221,41 @@ def new_contact():
 def store_contacct():
     contact = session['form']
     store = Contact.add_new(contact)
-    return redirect(url_for('home_blueprint.index'))
+    return redirect(url_for('home_blueprint.contacts'))
+
+@blueprint.route('/edit_contact/<id>', methods=['GET', 'POST'])
+@login_required
+def edit_contact(id):
+    print(current_user)
+    contact = Contact.query.get(id)
+    form = NewContact()
+    if form.validate_on_submit():
+        session['form'] = form.data
+        return redirect(url_for('home_blueprint.update_contact', id = contact.id))
+    if request.method == 'GET':
+        form.name.data = contact.name
+        form.user_id.data = contact.user_id
+        form.client_id.data = contact.client_id
+        form.cellphone.data = contact.cellphone
+        form.email.data = contact.email
+        form.address.data = contact.address
+    return render_template('home/form_edit_contact.html', segment='index', form=form, id = contact.id)
+
+@blueprint.route('/update_contact/<id>')
+@login_required
+def update_contact(id):
+    locale.setlocale(locale.LC_ALL, 'es_CO.UTF8')
+    contact = Contact.query.get(id)
+    contact.name = session["form"]["name"]
+    contact.email = session["form"]["email"]
+    contact.cellphone = session["form"]["cellhone"]
+    contact.address = session["form"]["address"]
+    contact.client_id = session["form"]["client_id"]
+    contact.user_id = session["form"]["user_id"]
+    
+    Contact.update(contact)
+    db.session.commit()
+    return redirect(url_for('home_blueprint.contacts'))
 
 
 @blueprint.route('/new_project', methods=['GET', 'POST'])

@@ -1,0 +1,301 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} SING - Nuevo Cliente {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <!-- [ Main Content ] start -->
+    <div class="pcoded-main-container">
+        <div class="pcoded-wrapper">
+
+            <div class="pcoded-content">
+                <div class="pcoded-inner-content">
+                    <!-- [ breadcrumb ] start -->
+                    <div class="page-header">
+                        <div class="page-block">
+                            <div class="row align-items-center">
+                                <div class="col-md-12">
+                                    <div class="page-header-title">
+                                        <h5 class="m-b-10"> Editar Contacto </h5>
+                                    </div>
+                                    <ul class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="javascript:">Contacto</a></li>
+                                        <li class="breadcrumb-item"><a href="javascript:">Editar Contacto</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- [ breadcrumb ] end -->
+                    <div class="main-body">
+                        <div class="page-wrapper">
+                            <!-- [ Main Content ] start -->
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            
+                                            <h5> Datos del Contacto </h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <form  method="POST" action="/edit_client">
+                                                        {{ form.csrf_token }}
+
+                                                        
+                                                        <div hidden>
+
+                                                            {{ form.user_id }}
+                                                        </div>
+                                                        
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group">
+                                                                    <label>Nombre : </label>
+                                                                    {{ form.name(class='form-control') }}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                        
+
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <label>Celular : </label>
+                                                                    {{ form.cellphone(class='form-control') }}
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <label>eMail : </label>
+                                                                    {{ form.email(class='form-control') }}
+                                                                </div>
+                                                            </div>
+                                                            
+                                                        </div>
+                                                        
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group">
+                                                                    <label>Direccion : </label>
+                                                                    {{ form.address(class='form-control') }}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group">
+                                                                    {{ form.client_id.label  }}
+                                                                    {{ form.client_id(class_="form-control") }}
+                                                                    <small id="client_id_help" class="form-text text-muted">Cada contacto debe relacionarse con un cliente.</small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <div class="col-md-10">
+                                                                {{ form.errors }}
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <div class="form-group" style="text-align:right">
+                                                                    {{ form.submit(class="btn btn-primary") }}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        
+                                                        
+                                                        <!-- <input type="submit" value="Crear CC"> -->
+                                                        <!-- <button type="submit" class="btn btn-primary">Submit</button> -->
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>                                        
+                                    </div>
+                                    <!-- Input group -->
+                                    <!--
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Input Group</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="input-group mb-3">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text" id="basic-addon1">@</span>
+                                                </div>
+                                                <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+                                            </div>
+                                            <div class="input-group mb-3">
+                                                <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text" id="basic-addon2">@example.com</span>
+                                                </div>
+                                            </div>
+                                            <label for="basic-url">Your vanity URL</label>
+                                            <div class="input-group mb-3">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text" id="basic-addon3">https://example.com/users/</span>
+                                                </div>
+                                                <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3">
+                                            </div>
+                                            <div class="input-group mb-3">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">$</span>
+                                                </div>
+                                                <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">.00</span>
+                                                </div>
+                                            </div>
+                                            <h5 class="mt-5">Sizing</h5>
+                                            <hr>
+                                            <div class="input-group input-group-sm mb-3">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text" id="inputGroup-sizing-sm">Small</span>
+                                                </div>
+                                                <input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+                                            </div>
+                                            <div class="input-group mb-3">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text" id="inputGroup-sizing-default">Default</span>
+                                                </div>
+                                                <input type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+                                            </div>
+                                            <div class="input-group input-group-lg">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text" id="inputGroup-sizing-lg">Large</span>
+                                                </div>
+                                                <input type="text" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
+                                            </div>
+                                            <h5 class="mt-5">Button Addons</h5>
+                                            <hr>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="input-group mb-3">
+                                                        <div class="input-group-prepend">
+                                                            <button class="btn btn-primary" type="button">Button</button>
+                                                        </div>
+                                                        <input type="text" class="form-control" placeholder="" aria-label="" aria-describedby="basic-addon1">
+                                                    </div>
+                                                    <div class="input-group mb-3">
+                                                        <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                                                        <div class="input-group-append">
+                                                            <button class="btn btn-primary" type="button">Button</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="input-group mb-3">
+                                                        <div class="input-group-prepend">
+                                                            <button class="btn btn-primary" type="button">Button</button>
+                                                            <button class="btn btn-secondary" type="button">Button</button>
+                                                        </div>
+                                                        <input type="text" class="form-control" placeholder="" aria-label="" aria-describedby="basic-addon1">
+                                                    </div>
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                                                        <div class="input-group-append">
+                                                            <button class="btn btn-secondary" type="button">Button</button>
+                                                            <button class="btn btn-primary" type="button">Button</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <h5 class="mt-5">Buttons With Dropdowns</h5>
+                                                    <hr>
+                                                    <div class="input-group mb-3">
+                                                        <div class="input-group-prepend">
+                                                            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown</button>
+                                                            <div class="dropdown-menu">
+                                                                <a class="dropdown-item" href="#!">Action</a>
+                                                                <a class="dropdown-item" href="#!">Another action</a>
+                                                                <a class="dropdown-item" href="#!">Something else here</a>
+                                                                <div role="separator" class="dropdown-divider"></div>
+                                                                <a class="dropdown-item" href="#!">Separated link</a>
+                                                            </div>
+                                                        </div>
+                                                        <input type="text" class="form-control" aria-label="Text input with dropdown button">
+                                                    </div>
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" aria-label="Text input with dropdown button">
+                                                        <div class="input-group-append">
+                                                            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown</button>
+                                                            <div class="dropdown-menu">
+                                                                <a class="dropdown-item" href="#!">Action</a>
+                                                                <a class="dropdown-item" href="#!">Another action</a>
+                                                                <a class="dropdown-item" href="#!">Something else here</a>
+                                                                <div role="separator" class="dropdown-divider"></div>
+                                                                <a class="dropdown-item" href="#!">Separated link</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <h5 class="mt-5">Segmented Buttons</h5>
+                                                    <hr>
+                                                    <div class="input-group mb-3">
+                                                        <div class="input-group-prepend">
+                                                            <button type="button" class="btn btn-secondary">Action</button>
+                                                            <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="sr-only">Toggle Dropdown</span></button>
+                                                            <div class="dropdown-menu">
+                                                                <a class="dropdown-item" href="#!">Action</a>
+                                                                <a class="dropdown-item" href="#!">Another action</a>
+                                                                <a class="dropdown-item" href="#!">Something else here</a>
+                                                                <div role="separator" class="dropdown-divider"></div>
+                                                                <a class="dropdown-item" href="#!">Separated link</a>
+                                                            </div>
+                                                        </div>
+                                                        <input type="text" class="form-control" aria-label="Text input with segmented dropdown button">
+                                                    </div>
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" aria-label="Text input with segmented dropdown button">
+                                                        <div class="input-group-append">
+                                                            <button type="button" class="btn btn-secondary">Action</button>
+                                                            <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="sr-only">Toggle Dropdown</span></button>
+                                                            <div class="dropdown-menu">
+                                                                <a class="dropdown-item" href="#!">Action</a>
+                                                                <a class="dropdown-item" href="#!">Another action</a>
+                                                                <a class="dropdown-item" href="#!">Something else here</a>
+                                                                <div role="separator" class="dropdown-divider"></div>
+                                                                <a class="dropdown-item" href="#!">Separated link</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    -->
+                                </div>
+                            </div>
+                            <!-- [ Main Content ] end -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+<script>
+    function toFinalNumberFormat(controlToCheck) {
+        var enteredNumber = '' + controlToCheck.value;
+        enteredNumber = enteredNumber.replace(/[^0-9\.]+/g, ''); 
+        controlToCheck.value = Number(enteredNumber).toLocaleString('es-CO', { style: 'currency', currency: 'COP' }); 
+    }
+</script>
+
+
+{% endblock javascripts %}

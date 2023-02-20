@@ -18,6 +18,7 @@ from decimal import Decimal
 import locale
 
 from flask_dance.consumer.storage.sqla import OAuthConsumerMixin
+from flask_seeder import Seeder, Faker, generator
 
 from apps import db, login_manager
 
@@ -327,7 +328,7 @@ class Status(db.Model):
     def get_statuses():
         qry = Status.query.all()
         return qry
-
+      
 
 class Project(db.Model):
     

@@ -205,14 +205,20 @@
             
                     <div style="position:relative;text-align: left" class="firmaDiv">
             
-                        <img src="http://sing.com.co/alejo/img/firma.png" class="firma" style="position:absolute;top:-50px" width="200px">
+                        <img src="{{ invoice.user.firma or ''}}" class="firma" style="position:absolute;top:-50px" width="200px">
                         <br>
                         ______________________ <br>
-                        Alejandro Mejia Ayala   <br>
-                        RUT 73146795-1 <br>
-                        Dir : Cra 58 # 134A 52 Bloque 1 Apto 202 <br>
-                        Celular : 315 7520662 <br>
-                        Nota: Hacer la consignacion o transferencia en Banco ITAU, Cuenta de Ahorros 291241451
+                        {{ username }}  <br>
+                        RUT {{ invoice.user.rut  or ''}} <br>
+                        {{ invoice.user.address  or ''}} <br>
+                        Celular : {{ invoice.user.phone or ''}} <br>
+                        Nota: Hacer la consignacion o transferencia en Banco {{ invoice.user.banco or '' }} 
+                            {% if 'ahorro' in invoice.user.tipo_cuenta %}
+                                Cuenta de Ahorro No 
+                            {% else %}
+                                Cuenta Corriente No
+                            {% endif %}
+                        {{ invoice.user.ncuenta }}
                     </div>
                 </div>
             </div>

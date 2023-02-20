@@ -78,6 +78,24 @@ class NewProject(FlaskForm):
         self.user_id.data = current_user.id
         self.client_id.choices = [(c.id, c.name) for c in Client.query.all()]
         self.client_id.label = "Cliente"
+        
+class UserForm(FlaskForm):
+    username = StringField('username', validators=[DataRequired()])
+    email = StringField('email', validators=[DataRequired()])
+    password = StringField('password', validators=[DataRequired()])
+    first_name = StringField('first_name', validators=[DataRequired()])
+    last_name = StringField('last_name', validators=[DataRequired()])
+    address = StringField('address', validators=[DataRequired()])
+    phone = StringField('phone', validators=[])
+    rut = StringField('rut', validators=[DataRequired()])
+    banco = StringField('banco', validators=[DataRequired()])
+    tipo_cuenta = SelectField('tipo_cuenta', validators=[DataRequired()], choices=[(None, 'Seleccione un tipo de cuenta'),('ahorros','ahorros'), ('corriente', 'corriente')])
+    ncuenta = StringField('ncuenta', validators=[DataRequired()])
+    avatar = StringField('avatar', validators=[])
+    firma = StringField('firma', validators=[])                       
+    submit = SubmitField('Enviar')
+    
+    
 
 
     

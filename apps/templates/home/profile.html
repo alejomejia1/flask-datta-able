@@ -23,63 +23,144 @@
                                             <h5>Edit Info</h5>
                                         </div>
                                         <div class="card-block">
-                                            <div class="row">
-                                                <div class="col-sm-6 mb-4">
-                                                    <div class="form-group">
-                                                        <label for="exampleInputUsername">Username</label>
-                                                        <input class="form-control" id="exampleInputUsername" readonly 
-                                                               value="{{ current_user.username }}"
-                                                               aria-describedby="userHelp" placeholder="Enter email">
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-6 mb-4">
-                                                    <div class="form-group">
-                                                        <label {% if not current_user.email %} class="text-danger" {% endif %} 
-                                                               for="exampleInputEmail1">Email address</label>
-                                                        <input type="email"
-                                                               {% if current_user.email %} readonly value="{{ current_user.email }}" {% endif %}  
-                                                               class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
-                                                        {% if not current_user.email %}       
-                                                            <small id="emailHelp" class="form-text text-danger">
-                                                                You don't have an email address associated with this account.
-                                                            </small>
-                                                        {% endif %}    
-                                                    </div>
-                                                </div>                                                
-                                                <div class="col-sm-6 mb-4">
-                                                    <div class="form-group">
-                                                        <label for="fn">First Name</label>
-                                                        <input type="email" class="form-control" id="fn" aria-describedby="emailHelp" placeholder="Your name">
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-6 mb-4">
-                                                    <div class="form-group">
-                                                        <label for="ln">Last Name</label>
-                                                        <input type="email" class="form-control" id="ln" aria-describedby="emailHelp" placeholder="Your last name">
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-12 mb-4">
-                                                    <div class="form-group">
-                                                        <label for="add">Address</label>
-                                                        <input type="email" class="form-control" id="add" aria-describedby="emailHelp" placeholder="Full address here">
-                                                        <small id="addd" class="form-text text-muted">This is your shipments address</small>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-12 mb-4">
-                                                    <div class="form-group">
-                                                        <label for="abt">About Info</label>
-                                                        <textarea type="email" class="form-control" id="abt" aria-describedby="emailHelp" placeholder="Bio"></textarea>
-                                                        <small id="abf" class="form-text text-muted">We'll show this on your profile.</small>
-                                                    </div>
+                                            <form  method="POST" action="/profile/{{current_user.id}}">
+                                                {{ form.csrf_token }}
+
+                                                <div hidden >
+                                                    {{ form.data.password }}
                                                 </div>
 
-                                                <div class="col-sm-12 mb-2">
-                                                    <div class="form-group">
-                                                        <button type="submit" class="btn btn-primary">Submit</button>
+
+                                                <div class="row">
+                                                    <div class="col-sm-6 mb-4">
+                                                        <div class="form-group">
+                                                            <label for="exampleInputUsername">Username</label>
+                                                            <input class="form-control" id="exampleInputUsername" readonly 
+                                                                value="{{ form.data.username }}"
+                                                                aria-describedby="userHelp" placeholder="Enter email">
+                                                        </div>
                                                     </div>
-                                                </div>                                                
+                                                    <div class="col-sm-6 mb-4">
+                                                        <div class="form-group">
+                                                            <label {% if not current_user.email %} class="text-danger" {% endif %} 
+                                                                for="exampleInputEmail1">Email</label>
+                                                            <input type="email"
+                                                                {% if form.data.email %} readonly value="{{ form.data.email }}" {% endif %}  
+                                                                class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+                                                            {% if not form.data.email %}       
+                                                                <small id="emailHelp" class="form-text text-danger">
+                                                                    You don't have an email address associated with this account.
+                                                                </small>
+                                                            {% endif %}    
+                                                        </div>
+                                                    </div>                                                
                                                 
-                                            </div>
+                                                    <div class="col-sm-6 mb-4">
+                                                        <div class="form-group">
+                                                            {{ form.first_name.label  }}
+                                                            {{ form.first_name(class_="form-control") }}
+                                                        </div>
+                                                        {% if not form.first_name %}       
+                                                            <small id="first_namehelp" class="form-text text-danger">
+                                                                No tienes nombres asociados a esta cuenta.
+                                                            </small>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="col-sm-6 mb-4">
+                                                        <div class="form-group">
+                                                            {{ form.last_name.label  }}
+                                                            {{ form.last_name(class_="form-control") }}
+                                                        </div>
+                                                        {% if not form.last_name %}       
+                                                            <small id="last_nameHelp" class="form-text text-danger">
+                                                                No tienes apellidos asociados a esta cuenta.
+                                                            </small>
+                                                        {% endif %}
+                                                    </div>
+
+                                                    <div class="col-sm-6 mb-6">
+                                                        <div class="form-group">
+                                                            {{ form.address.label  }}
+                                                            {{ form.address(class_="form-control") }}
+                                                        </div>
+                                                        {% if not form.address %}       
+                                                            <small id="addresshelp" class="form-text text-danger">
+                                                                No tienes direccion asociada a esta cuenta.
+                                                            </small>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="col-sm-6 mb-6">
+                                                        <div class="form-group">
+                                                            {{ form.phone.label  }}
+                                                            {{ form.phone(class_="form-control") }}
+                                                        </div>
+                                                        {% if not form.phone %}       
+                                                            <small id="addresshelp" class="form-text text-danger">
+                                                                No tienes un numero de telefono asociada a esta cuenta.
+                                                            </small>
+                                                        {% endif %}
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <div class="form-group">
+                                                                {{ form.rut.label  }}
+                                                                {{ form.rut(class_="form-control") }}
+                                                                <!-- <small id="tipo_cuenta_help" class="form-text text-muted">Seleccione un tipo de cuenta.</small> -->
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="form-group">
+                                                                {{ form.tipo_cuenta.label  }}
+                                                                {{ form.tipo_cuenta(class_="form-control") }}
+                                                                <small id="tipo_cuenta_help" class="form-text text-muted">Seleccione un tipo de cuenta.</small>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="form-group">
+                                                                {{ form.banco.label  }}
+                                                                {{ form.banco(class_="form-control") }}
+                                                                <!-- <small id="tipo_cuenta_help" class="form-text text-muted">Seleccione un tipo de cuenta.</small> -->
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="form-group">
+                                                                {{ form.ncuenta.label  }}
+                                                                {{ form.ncuenta(class_="form-control") }}
+                                                                <!-- <small id="tipo_cuenta_help" class="form-text text-muted">Seleccione un tipo de cuenta.</small> -->
+                                                            </div>
+                                                        </div>
+                                                    </div>  
+                                                    <!--
+                                                    <div class="col-sm-12 mb-4">
+                                                        <div class="form-group">
+                                                            <label for="abt">About Info</label>
+                                                            <textarea type="email" class="form-control" id="abt" aria-describedby="emailHelp" placeholder="Bio"></textarea>
+                                                            <small id="abf" class="form-text text-muted">We'll show this on your profile.</small>
+                                                        </div>
+                                                    </div>
+                                                    -->
+
+                                                    <div class="row">
+                                                        <div class="col-md-10">
+                                                            {{ form.errors or '' }}
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <div class="form-group" style="text-align:right">
+                                                                {{ form.submit(class="btn btn-primary") }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!--
+                                                    <div class="col-sm-12 mb-2">
+                                                        <div class="form-group">
+                                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                                        </div>
+                                                    </div>                                                
+                                                    -->
+                                                </div>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>

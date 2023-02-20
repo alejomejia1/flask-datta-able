@@ -3,6 +3,7 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 
+from flask import jsonify
 from flask_login import UserMixin
 import sys
 
@@ -24,6 +25,22 @@ from apps.authentication.util import hash_pass
 
 from datetime import datetime
 
+class InvalidUsage(Exception):
+    status_code = 400
+
+    def __init__(self, message, status_code=None, payload=None):
+        Exception.__init__(self)
+        self.message = message
+        if status_code is not None:
+            self.status_code = status_code
+        self.payload = payload
+
+    def to_dict(self):
+        rv = dict(self.payload or ())
+        rv['message'] = self.message
+        return rv
+
+
 class Users(db.Model, UserMixin):
 
     __tablename__ = 'users'
@@ -32,10 +49,19 @@ class Users(db.Model, UserMixin):
     username      = db.Column(db.String(64), unique=True)
     email         = db.Column(db.String(64), unique=True)
     password      = db.Column(db.String(255))
-    name          = db.Column(db.String(50), nullable=True)
     group_id      = db.Column(db.Integer, nullable=True)
     role_id       = db.Column(db.Integer, nullable=True)
+    avatar        = db.Column(db.String(255), nullable=True)
+    first_name    = db.Column(db.String(125), nullable=True)
+    last_name     = db.Column(db.String(125), nullable=True)
+    address       = db.Column(db.String(255), nullable=True)
+    phone         = db.Column(db.String(20), nullable=True)
     rut           = db.Column(db.String(20), nullable=True)
+    banco         = db.Column(db.String(100), nullable=True)
+    tipo_cuenta   = db.Column(db.String(50), nullable=True)
+    ncuenta       = db.Column(db.String(50), nullable=True)
+    firma         = db.Column(db.String(255), nullable=True)
+    
 
     # oauth_github  = db.Column(db.String(100), nullable=True)
 
