@@ -1,0 +1,295 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Visitantes {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+  <style>
+    .card {
+      margin-top: 2em;
+      padding: 1.5em 0.5em 0.5em;
+      border-radius: 2em;
+      text-align: center;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    }
+    .card img {
+      width: 65%;
+      border-radius: 50%;
+      margin: 0 auto;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+    .card .card-title {
+      font-weight: 700;
+      font-size: 1.5em;
+    }
+    .card .btn {
+      border-radius: 2em;
+      background-color: teal;
+      color: #ffffff;
+      padding: 0.5em 1.5em;
+    }
+    .card .btn:hover {
+      background-color: rgba(0, 128, 128, 0.7);
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <!-- [ Main Content ] start -->
+    <div class="pcoded-main-container">
+        <div class="pcoded-wrapper">
+
+            <div class="pcoded-content">
+                <div class="pcoded-inner-content">
+                    <!-- [ breadcrumb ] start -->
+                    <div class="page-header">
+                        <div class="page-block">
+                            <div class="row align-items-center">
+                                <div class="col-md-12">
+                                    <div class="page-header-title">
+                                        <h5 class="m-b-10">Visitantes </h5>
+                                    </div>
+                                    <!--
+                                    <ul class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="javascript:">Form Componants</a></li>
+                                        <li class="breadcrumb-item"><a href="javascript:">Form Elements</a></li>
+                                    </ul>
+                                    -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- [ breadcrumb ] end -->
+                    <div class="main-body">
+                      <div class="page-wrapper">
+                        <div class="row">
+                          <div class="col-sm-12 col-md-12 col-xl-12">
+                            <div class="card daily-stats">
+                              <div class="card-title" style="text-align:center">
+                                <h4 class="mb-4">Seleccione la ciudad e instalación </h4>
+                              </div>
+                              
+                              <div class="card-body">
+                                <!-- Large button groups (default and split) -->
+                                
+                                  <div class="dropdown  d-inline-block">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                      Bogotá
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                      <li><a class="dropdown-item" href="#">Calle 93</a></li>
+                                      <li><a class="dropdown-item" href="#">Calle 127</a></li>
+                                      <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                    </ul>
+                                  </div>
+                                  <div class="dropdown  d-inline-block">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                      Medellin
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                                      <li><a class="dropdown-item" href="#">Site 1</a></li>
+                                      <li><a class="dropdown-item" href="#">Site 2</a></li>
+                                      <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                    </ul>
+                                  </div>
+                                  <div class="dropdown  d-inline-block">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                      Pereira
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                                      <li><a class="dropdown-item" href="#">Site 1</a></li>
+                                      <li><a class="dropdown-item" href="#">Site 2</a></li>
+                                      <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                    </ul>
+                                  </div>
+                                  <div class="dropdown  d-inline-block">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                      Barranquilla
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                                      <li><a class="dropdown-item" href="#">Site 1</a></li>
+                                      <li><a class="dropdown-item" href="#">Site 2</a></li>
+                                      <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                    </ul>
+                                  </div>
+                                
+                                
+                                <!-- Large button end -->
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                            
+                        <div class="row">
+                          <div class="col-sm-2 col-md-1 col-xl-1">
+                              <div class="card daily-stats">
+                                <div class="card-title" style="text-align:center">
+                                  <h4 class="mb-4">Programados </h4>
+                                </div>
+                                  <div class="card-block">
+                                    
+                                      <h2 style="text-align:center"> {{ cvisitor }}</h2>
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="col-sm-2 col-md-1 col-xl-1">
+                            <div class="card daily-stats">
+                                <div class="card-title" style="text-align:center">
+                                  <h4 class="mb-4">Ingresaron </h4>
+                                </div>
+                                <div class="card-block">
+                              
+                                    <h2 style="text-align:center"> {{ count_ingresos }}</h2>
+                                </div>
+                            </div>
+                          </div>
+                          <div class="col-sm-2 col-md-1 col-xl-1">
+                              <div class="card daily-stats">
+                                  <div class="card-title" style="text-align:center">
+                                    <h4 class="mb-4">Por Llegar </h4>
+                                  </div>
+                                  <div class="card-body">
+                                      
+                                      <h2 style="text-align:center"> {{ c_por_llegar }}</h2>
+                          
+                                  </div>
+                              </div>
+                          </div>
+                        </div>
+
+                          <div class="row">
+                            <div class="col-sm-12 col-md-12 col-xl-12">
+                              <div class="card daily-sales">
+                                <div class="card-title" style="text-align:center">
+                                  <h4 class="mb-4"> Visitantes que permanecen al interior </h4>
+                                </div>
+                                <div class="card-block">
+                                  <h6 class="mb-4"></h6>
+                                  <table id="data" class="table table-striped">
+                                      <thead>
+                                        <tr>
+                                          <th>Instalacion </th>
+                                          <th>Identificacion</th>
+                                          <th>Nombre</th>
+                                          <th>Hora Ingreso</th>
+                                          
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {% for visitor in visitor_still_inside %}
+                                          {% if visitor.direction %}
+                                          <tr>
+                                            <td>{{ visitor.site_id }}</td>
+                                            <td>{{ visitor.user_id }}</td>
+                                            <td>{{ visitor.name }}</td>
+                                            <td>{{ visitor.server_timestamp.strftime('%Y-%m-%d  %H:%M:%S' ) }}</td>
+                                            
+                                          </tr>
+                                          {% endif %}
+                                        {% endfor %}
+                                      </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="row">
+                            <div class="col-sm-12 col-md-12 col-xl-12">
+                              <div class="card daily-sales">
+                                <div class="card-title" style="text-align:center">
+                                  <h4 class="mb-4"> Visitantes programados </h4>
+                                </div>
+                                <div class="card-block">
+                                  
+                                  <table id="visitors" class="table table-striped">
+                                    <thead>
+                                      <tr>
+                                        <th>Identificacion</th>
+                                        <th>Nombre</th>
+                                        <th>Instalaciones</th>
+                                        <th>Ingresos/Salidas</th>
+                                        <th>Autoriza</th>
+                                        <th>email Autorizador</th>
+                                        
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {% for visitor in info_visitors %}
+                                        <tr>
+                                          <td>{{ visitor.numero_doc }}</td>
+                                          <td>{{ visitor.fullname }}</td>
+                                          <td>
+                                            <table>
+                                            {% for instalation in visitor.instalaciones%}
+                                              <tr>
+                                                  <td>{{ instalation.site_id }}</td>
+                                              </tr>
+                                            {% endfor %}
+                                            </table>
+                                          </td>
+                                          <td>
+                                            <table>
+                                            {% for event in visitor.events%}
+                                  
+                                              <tr>
+                                                  <td>{{ event[0] }}</td>
+                                                  <td>{{ event[1] }}</td>
+                                                  {% if event[2] %}
+                                                    <td> Entrada </td>
+                                                  {% else %}
+                                                    <td> Salida </td>
+                                                  {% endif %}
+                                              </tr>
+                                            {% endfor %}
+                                            </table>
+                                          </td>
+                                          <td> {{ visitor.funcionario }}</td>
+                                          <td> {{ visitor.emailFuncionario }}</td>
+                                          
+                                        </tr>
+                                      {% endfor %}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- [ Main Content ] end -->
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script>
+    $.fn.dataTable.ext.buttons.alert = {
+      className: 'buttons-alert',
+   
+      action: function ( e, dt, node, config ) {
+          alert( this.text() );
+      }
+    };
+
+    $(document).ready(function () {
+      $('#data').DataTable({
+        //dom: 'Bfrtip',
+        
+      });
+      $('#visitors').DataTable();
+    });
+  </script>
+
+{% endblock javascripts %}

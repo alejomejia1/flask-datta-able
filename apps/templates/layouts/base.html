@@ -3,7 +3,7 @@
 
 <head>
     <title>
-        SING - {% block title %}{% endblock %}
+        INDRA - {% block title %}{% endblock %}
     </title>
     <!-- HTML5 Shim and Respond.js IE11 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -31,10 +31,23 @@
     <link rel="stylesheet" href="{{ config.ASSETS_ROOT }}/css/style.css">
     <!-- dark mode css -->
     <link rel="stylesheet" href="{{ config.ASSETS_ROOT }}/css/dark.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+
     <!-- dataTables -->
+    <link href="https://nightly.datatables.net/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
+    <link href="https://nightly.datatables.net/select/css/select.dataTables.css?_=83ccd9fe32dc99a890e17a9f1bbde5a4.css" rel="stylesheet" type="text/css" />
+    <link href="https://nightly.datatables.net/staterestore/css/stateRestore.dataTables.css" rel="stylesheet" type="text/css" />
+    <link href="https://nightly.datatables.net/searchpanes/css/searchPanes.dataTables.css?_=5c6e38dbaaf467e0d790080ff9947c2c.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.css" rel="stylesheet" type="text/css" />
+
+    <!--
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap5.css">
-
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.2/css/jquery.dataTables.min.css">
+    <link href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.css" rel="stylesheet" type="text/css" />
+    -->
     
 
     <!-- Specific CSS goes HERE -->
@@ -71,11 +84,33 @@
     <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="text/javascript" charset="utf8" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
     
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
 
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js" integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-slimScroll/1.3.8/jquery.slimscroll.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+
+
+
+    <script src="https://nightly.datatables.net/js/jquery.dataTables.js"></script>
+    <script src="https://nightly.datatables.net/staterestore/js/dataTables.stateRestore.js"></script>
+    <script src="https://nightly.datatables.net/select/js/dataTables.select.js?_=83ccd9fe32dc99a890e17a9f1bbde5a4"></script>
+    <script src="https://nightly.datatables.net/searchpanes/js/dataTables.searchPanes.js?_=5c6e38dbaaf467e0d790080ff9947c2c"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.js"></script>
+
+    <!--
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.2.3/js/jquery.dataTables.js"></script>
+    
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    
+
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.2.3/js/dataTables.bootstrap5.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/plug-ins/1.13.2/sorting/currency.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.4/js/buttons.html5.min.js"></script>
+    -->
 
     {% block javascripts %}{% endblock javascripts %}
 

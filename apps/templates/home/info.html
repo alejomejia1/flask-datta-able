@@ -1,0 +1,868 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Clientes {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+
+<!-- [ Main Content ] start -->
+<div class="pcoded-main-container">
+  <div class="pcoded-wrapper">
+
+      <div class="pcoded-content">
+          <div class="pcoded-inner-content">
+              <!-- [ breadcrumb ] start -->
+              <div class="page-header">
+                  <div class="page-block">
+                      <div class="row align-items-center">
+                          <div class="col-md-12">
+                              <div class="page-header-title">
+                                  <h5 class="m-b-10">Visitantes </h5>
+                              </div>
+                              <!--
+                              <ul class="breadcrumb">
+                                  <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+                                  <li class="breadcrumb-item"><a href="javascript:">Form Componants</a></li>
+                                  <li class="breadcrumb-item"><a href="javascript:">Form Elements</a></li>
+                              </ul>
+                              -->
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <!-- [ breadcrumb ] end -->
+              <div class="main-body">
+                  <div class="page-wrapper">
+                    <div class="row">
+
+
+              <div class="profile-header">
+                <div class="profile-img">
+                  
+                  <img src="https://bio01.ecopetrol.com.co/enrols/imgs/{{imagen}}"  height="200" alt="" onerror="this.src='../static/imgs/default.png'">
+                  <!-- <img src='{{url_for('static', filename='imgs/' + imagen)}}'  height="200" alt="Profile Image"> -->
+                  
+                </div>
+                <div class="profile-nav-info">
+                  <h3 class="user-name">{{enrolTemp.first_name}} {{enrolTemp.last_name}}</h3>
+                  <h4 class="address"> {{empleado.NUO}}</h4>
+                  <div class="address">
+                    <p id="numero_doc" class="state">{{enrolTemp.numero_doc}}</p>
+                  </div>
+                  <div hidden>
+                    <div class="led-box" >
+                      <div class="led-green" id="led"></div>
+                      <p style="margin-left: -5px;">P. Pers</p>
+                    </div>
+    
+                    <div class="led-box">
+                      <div class="led-green" id="led"></div>
+                      <p style="margin-left: -5px;">P. Cont</p>
+                    </div>
+    
+                    <div class="led-box" >
+                      <div class="led-green" id="led"></div>
+                      <p style="margin-left: -5px;">Lenel</p>
+                    </div>
+                  </div>
+            
+                </div>
+                
+
+                <div class="profile-option">
+                  
+                  <div class="led-box" >
+                    <div class="led-green" id="lenel-status"></div>
+                    <p style="margin-left: -25px;">Dataconduit</p>
+                  </div>
+
+                  
+
+                </div>
+                
+
+              </div>
+          
+            <div class="main-bd">
+              
+              <div class="left-side">
+                <!-- <div class="profile-side">
+                  <h3> Registros Biometricos </h3>
+                  <br>
+                  <p> Cantidad de registros: {{registros|length - terminados|length}}</p>
+                  <p> Registros completos: {{terminados|length}}</p>
+                  <p> Ultimo registro exitoso: {{ultimo.created}}</p>
+            
+          
+                </div> -->
+                <div class="profile-side" width=50%>
+                  <h3> Datos Planta Personal </h3>
+                  <br>
+                    <p> <b>Nombres: </b> <br> {{empleado.Nombres}}</p>
+                    <p style="font-size:0.6em"> Cedula: {{empleado.numero_doc}}  - SSNO: {{empleado.ssno}} </p>
+                    <p> <b>eMail: </b> <br> {{empleado.email}}</p>
+                    <p> Localización Geografica : <br> {{empleado.regional}} - {{empleado.ciudad}}</p>
+                    <p> Estructura Organizativa : <br> {{empleado.N1}} - {{empleado.N2}} - {{empleado.N3}} - {{empleado.N4}}</p>
+                    <p> Cargo : <br> {{empleado.NUO}} </p>
+                    <!-- <p> Posicion: {{empleado.posicion}}</p> -->
+                </div>
+
+                <div class="profile-side-1" width=50%>
+                  <h3> Datos Planta Contratistas </h3>
+                  <br>
+                    <p> <b>Nombres: </b> <br> {{contratista.Nombres}}</p>
+                    <p style="font-size:0.6em"> Cedula: {{contratista.numero_doc}} </p>
+                    <p> Localización Geografica : <br> {{contratista.department}} - {{contratista.city}}</p>
+                    <p> <b>Status: </b> <br> {{contratista.status}}</p>
+                    <p> <b>Mandato: </b> <br> {{contratista.mandato}}</p>
+                </div>
+              </div>
+
+              <br>
+
+              <div class="profile-body">
+                
+                <div class="card">
+                  
+                  <div class="card-body" style="background-color:{{ diagnostico.color }} ;">
+                    <h4 class="card-title">Resumen</h4>
+                    <div class="row">
+                      {{ diagnostico.Diagnostico }}
+                    </div>
+                    <div class="row" style="padding: 10px;">
+                      <div style="text-align:right">
+                          <a onclick="openAnalisis()" class="btn btn-primary"> Analisis </a>
+                      </div>
+                    </div>
+                    
+                  </div>
+                </div>
+
+              
+                <hr>
+
+                <nav>
+                  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <button class="nav-link active" id="nav-rbio-tab" data-bs-toggle="tab" data-bs-target="#nav-rbio" type="button" role="tab" aria-controls="nav-rbio" aria-selected="true">Reg Biometrico</button>
+                    <button class="nav-link" id="nav-lenel-tab" data-bs-toggle="tab" data-bs-target="#nav-lenel" type="button" role="tab" aria-controls="nav-lenel" aria-selected="false">Lenel</button>
+                    <button class="nav-link" id="nav-ecopass-tab" data-bs-toggle="tab" data-bs-target="#nav-ecopass" type="button" role="tab" aria-controls="nav-ecopass" aria-selected="false">Envio Imagenes</button>
+                    <button class="nav-link" id="nav-imagend-tab" data-bs-toggle="tab" data-bs-target="#nav-imagend" type="button" role="tab" aria-controls="nav-imagend" aria-selected="false">Imagen en Disp.</button>
+                    <button class="nav-link" id="nav-reconoce-tab" data-bs-toggle="tab" data-bs-target="#nav-reconoce" type="button" role="tab" aria-controls="nav-reconoce" aria-selected="false">Reconocimientos</button>
+                  </div>
+                </nav>
+                <div class="tab-content" id="nav-tabContent">
+                  <div class="tab-pane fade show active" id="nav-rbio" role="tabpanel" aria-labelledby="nav-rbio-tab" style="padding:10px">
+                    <br>
+                    <h3>Registros biométricos</h3>
+                    <br>
+                    <table id="myTable" class="display">
+                      <thead>
+                          <tr>
+                              <th>Fecha</th>
+                              <th>Nombres</th>
+                              <th>Apellidos</th>
+                              <th>Step</th>
+                              <!-- <th>Metadatos</th> -->
+                              <th>Origen</th>
+                              <th>Autoriza Datos</th>
+                              <!-- <th>Contratista</th> -->
+                          </tr>
+                      </thead>
+                      <tbody>
+                          {% for registro in registros%}
+                            <tr>
+                                <td> {{registro.created}} </td>
+                                <td> {{registro.first_name}}</td>
+                                <td> {{registro.last_name}}</td>
+                                <td style="text-align:center"> {{registro.stepEnrol_id}} </td>
+                                <!-- <td style="width: 20%;"> {{registro.metadatos}}</td> -->
+                                <td style="text-align:center"> {{registro.origin_id}}</td>
+                                <td style="text-align:center">
+                                  {% if registro.terminos[0] %}
+                                  <span style="font-size: 24px; color: Green; text-align:center">
+                                    <i color="green" class="fa fa-check"></i>
+                                  </span>
+                                  {% endif %}
+
+                                </td>
+                                <!-- <td> {{registro.verifica_contratista}}</td> -->
+                            </tr>
+                            {% endfor %}
+                      </tbody>
+                      <tfoot>
+
+                      </tfoot>
+                    </table>
+                  </div>
+                  <div class="tab-pane fade" id="nav-lenel" role="tabpanel" aria-labelledby="nav-lenel-tab" style="padding:10px">
+                    <br>
+                    <h3>Datos Lenel</h3>
+        
+                    {% for datoLenel in datosLenel.lenel %}
+                    <div class="row">
+                      <div class="col-md-12">
+                        <p><b> Datos de identificación en Lenel </b></p>  </p>
+                        <p><b> Apellidos : </b> <span id="apellidos_lenel"> {{datoLenel.apellidos}}</span></> </p>
+                        <p><b> Nombres : </b> <span id="nombres_lenel"> {{datoLenel.nombres}} </span> </p>
+                        <p><b> SSNO : </b> <span id="ssno_lenel">{{datoLenel.ssno}} </span> </p>
+                        <p><b> Nro Documento : </b> <span id="documento_lenel"> {{datoLenel.documento}} </span> </p>
+                        <p><b> Permite Visitantes : </b> {{datoLenel.permiteVisitantes}} <span id="visitantes_lenel"> </span> </p>
+                      </div>
+                    </div>  
+                    
+                    <div class="row">
+                      <div class="col-md-12">
+                        <p> <b> Tarjetas de Proximidad vigentes </b> </p>
+                        <table id="badgesData">
+                          <thead>
+                            <th> Badge Id</th>
+                            <th> Activación</th>
+                            <th> Desactivación</th>
+                            <th> estado </th>
+                          </thead>
+                          <tbody>
+                            {% for badge in datoLenel.badges %}
+                              <td> {{badge.badgeID}}</td>
+                              <td> {{badge.activacion}}</td>
+                              <td> {{badge.desactivacion}}</td>
+                              <td> {{badge.estado}}</td>
+                            {% endfor %}
+                          </tbody>
+                          <tfoot>
+
+                          </tfoot>
+
+                        </table>
+                      </div>
+                    </div>
+                    {% endfor %}
+                    {% if marcacion in datosLenel %}
+                    <div class="row">
+                      <div class="col-md-12">
+                        <p> <b> Marcaciones </b> </p>
+                        <table id="markData">
+                          <thead>
+                            <th> Badge Id</th>
+                            <th> Fecha-Hora</th>
+                            <th> Panel ID</th>
+                            <th> reader Id </th>
+                          </thead>
+                          <tbody>
+
+                            {% for marcacion in datosLenel.marcacion.locations %}
+                              <td> {{marcacion.badgeId}}</td>
+                              <td> {{badge.eventTime}}</td>
+                              <td> {{badge.panelId}}</td>
+                              <td> {{badge.readerId}}</td>
+                            {% endfor %}
+                          </tbody>
+
+                          <tfoot>
+
+                          </tfoot>
+                        </table>
+                      </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="row">
+                      <div class="col-md-12">
+                        <p> <b> PanelId / ReaderID con acceso </b> </p>
+                        <table id="permisosData">
+                          <thead>
+                            <th> Panel</th>
+                            <th> Panel Id</th>
+                            <th> Reader</th>
+                            <th> Reader Id</th>
+                          </thead>
+                          <tbody>
+                            {% for datoLenel in datosLenel.lenel %}
+                            {% for badge in datoLenel.badges %}
+                              {% for acceso in badge.accesosAuth %}
+                              <tr>
+                                <td> {{acceso.panel}}</td>
+                                <td> {{acceso.panelID}}</td>
+                                <td> {{acceso.reader}}</td>
+                                <td> {{acceso.readerID}}</td>
+                              </tr>
+                              {% endfor %}
+                            {% endfor %}
+                            {% endfor %}
+                          </tbody>
+                          <tfoot></tfoot>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="tab-pane fade" id="nav-ecopass" role="tabpanel" aria-labelledby="nav-ecopass-tab" style="padding: 10px;">
+                    <br>
+                    <h3>Ultimos Registros de envio encontrados</h3>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <table id="passportData">
+                          <thead>
+                            <th> EnvioFoto Id</th>
+                            <th> Facilidad</th>
+                            <th> Fecha Inicio </th>
+                            <th> Fecha Final </th>                      
+                            <th> estado </th>
+                            <th> valido </th>
+                            <th> Creado </th>
+                          </thead>
+                          <tbody>
+                            {% for pasaporte in pasaportes %}
+                            <tr>
+                              <td> {{pasaporte.id}} </td>
+                              {% if pasaporte.sites[0] is defined %}
+                                <td> {{pasaporte.sites[0].site_id}} </td>
+                              {% else %}
+                                <td> </td>
+                              {% endif %}
+                              <td> {{pasaporte.start_time}}</td>
+                              <td> {{pasaporte.end_time}}</td>
+                              <td style="text-align:center">
+                                {% if pasaporte.status %}
+                                <span style="font-size: 24px; color: Green; text-align:center">
+                                  <i color="green" class="fa fa-check"></i>
+                                </span>
+                                {% else %}
+                                  <span style="font-size: 12px; color: red; text-align:center">
+                                    Registro biometrico no encontrado
+                                  </span>
+                                {% endif %}
+                              </td>
+                              <td style="text-align:center">
+                                {% if pasaporte.is_valid %}
+                                <span style="font-size: 24px; color: Green; text-align:center">
+                                  <i color="green" class="fa fa-check"></i>
+                                </span>
+                                {% endif %}
+                              </td>
+                              <td> {{pasaporte.created}}</td>
+                          </tr>
+                          {% endfor %}
+                          </tbody>
+                          
+                        </table>
+                      </div>
+                    </div>
+                  </div>  
+                  <div class="tab-pane fade" id="nav-imagend" role="tabpanel" aria-labelledby="nav-imagend-tab" style="padding: 10px;">
+                    <br>
+                    <h3>Imagenes Enviadas</h3>
+                    <div class="row">
+                      <div class="col-md-12">
+                
+                        <table id="employeeSiteData">
+                          <thead>
+                            <th> Site-Id</th>
+                            <th> Device Serial</th>
+                            <th> Device Name</th>
+                            <th> Lenel Door</th>
+                            <th> Procesado </th>
+                            <th> Fecha Envio </th>                      
+                            <th> RegEnvio Foto </th>
+                          </thead>
+                          <tbody>
+                            
+                          
+                          </tbody>
+                          <tfoot></tfoot>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="tab-pane fade" id="nav-reconoce" role="tabpanel" aria-labelledby="nav-reconoce-tab" style="padding: 10px;">
+                    <br>
+                    <h3>Ultimos 10 Registros de Entrada / Salida Sistema Biometrico  <a class="toggle-vis" data-column="9">.</a></h3>
+                    <br>
+                    <table id="uploads" class="display">
+                      <thead>
+                          <tr>
+                              <th>Similaridad</th>
+                              <th>Fecha/Hora</th>
+                              <th>Mascara</th>
+                              <th>device_name</th>
+                              <th>Lectora Lenel</th>
+                              <th>readerId</th>
+                              <th>panelId</th>
+                              <th>Id. Verific.</th>
+                              <th>EventoLenel</th>
+                              <th>Imagen</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          
+                      </tbody>
+                      <tfoot></tfoot>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+                  
+            </div>
+            <br>
+                       
+            {% include 'modals/charge.html' %}
+            {% include 'modals/diagnostico.html' %}
+            {% include 'modals/imgsModal.html' %}
+          <!-- </div>        
+    </body>
+</html> -->
+
+<style>
+  .modal {
+    padding: 5%;
+  }
+  .modal-lg {
+      min-width: auto;
+      max-width: fit-content;
+  }
+</style>
+
+
+
+
+
+<script>
+
+  var cedula = "{{cedula}}"
+  var url_reconocimientos = "{{url_for('get_reconocimientos', cedula=cedula, limit=10)}}"
+  var url_images = "{{url_for('get_images', cedula=cedula)}}"
+  var datosLenel = "{{datosLenel}}"
+  var datosMarcacion
+  var datosLectoras
+  
+  var bootstrap_enabled = false
+  var table
+
+
+  $(document).ready( function () {
+    // Will be true if bootstrap is loaded, false otherwise
+    bootstrap_enabled = (typeof $().modal == 'function');
+    
+    
+
+    $('#myTable').DataTable({
+      order: [[ 0, "desc" ]],
+      dom: 'Blfrtip',
+      language:
+      {
+          "sLengthMenu":     "Mostrar _MENU_ registros",
+          "sZeroRecords":    "No se encontraron resultados",
+          "sEmptyTable":     "Ningún dato disponible en esta tabla",
+          "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+          "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+          "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+          "sSearch":         "Buscar:",
+          "sInfoThousands":  ",",
+          "sLoadingRecords": "Cargando...",
+          "oPaginate": {
+              "sFirst":    "Primero",
+              "sLast":     "Último",
+              "sNext":     "Siguiente",
+              "sPrevious": "Anterior"
+          },
+          "oAria": {
+              "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+              "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+          },
+          "buttons": {
+              "copy": "Copiar",
+              "colvis": "Visibilidad"
+          }
+      },
+      buttons: [
+          'copyHtml5',
+          'excelHtml5',
+          'csvHtml5',
+          'pdfHtml5'
+      ],
+      
+    });
+    $('#uploads').DataTable({
+      order: [[ 1, "asc" ]],
+      dom: 'Blfrtip',
+      language:
+      {
+          "sLengthMenu":     "Mostrar _MENU_ registros",
+          "sZeroRecords":    "No se encontraron resultados",
+          "sEmptyTable":     "Ningún dato disponible en esta tabla",
+          "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+          "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+          "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+          "sSearch":         "Buscar:",
+          "sInfoThousands":  ",",
+          "sLoadingRecords": "Cargando...",
+          "oPaginate": {
+              "sFirst":    "Primero",
+              "sLast":     "Último",
+              "sNext":     "Siguiente",
+              "sPrevious": "Anterior"
+          },
+          "oAria": {
+              "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+              "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+          },
+          "buttons": {
+              "copy": "Copiar",
+              "colvis": "Visibilidad"
+          }
+      },
+      buttons: [
+          'copyHtml5',
+          'excelHtml5',
+          'csvHtml5',
+          'pdfHtml5'
+      ],
+      ajax: {
+        "url": url_reconocimientos,
+        "type": "GET"
+      },
+      columns: [
+          { "data": "similar"},
+          { "data": "time"},
+          { 
+            "data": "mask",
+            "render": function ( data ) {
+              return  data == true ? '<span style="font-size: 24px; color: green; text-align:center"><i color="green" class="fa fa-check"></i></span>' : '<span style="font-size: 24px; color: Red; text-align:center"><i color="red" class="fa fa-times"></i></span>'
+            },
+            "className": 'dt-body-center'
+          },
+          { "data": "device_name"},
+          { "data": "lenel_door"},
+          { "data": "readerid_door"},
+          { "data": "panelid_door"},
+          { 
+            "data": "isAuthorized",
+            "render": function ( data ) {
+              return  data == true ? '<span style="font-size: 24px; color: green; text-align:center"><i color="green" class="fa fa-check"></i></span>' : '<span style="font-size: 24px; color: Red; text-align:center"><i color="red" class="fa fa-times"></i></span>'
+            },
+            "className": 'dt-body-center'
+          },
+          { "data": "lenel_response"},
+          { 
+            "data": "image_url",
+            "render": function ( data ) {
+              urlImg = "https://bio01.ecopetrol.com.co" + data
+              urlDfl = "{{ url_for('static', filename='imgs/default.png')}}"
+              return  '<span> <img src="' + urlImg + '" alt="" height="120px" onerror="this.src=`' + urlDfl + '`" onclick="openImg(this.src)"> </span>'
+            },
+            "className": 'dt-body-center'
+          }
+      ],
+    });
+
+    $('#passportData').DataTable({
+      dom: 'Blfrtip',
+      order: [[ 3, "desc" ]],
+      language:
+      {
+          "sProcessing":     "Procesando...",
+          "sLengthMenu":     "Mostrar _MENU_ registros",
+          "sZeroRecords":    "No se encontraron resultados",
+          "sEmptyTable":     "Ningún dato disponible en esta tabla",
+          "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+          "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+          "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+          "sSearch":         "Buscar:",
+          "sInfoThousands":  ",",
+          "sLoadingRecords": "Cargando...",
+          "oPaginate": {
+              "sFirst":    "Primero",
+              "sLast":     "Último",
+              "sNext":     "Siguiente",
+              "sPrevious": "Anterior"
+          },
+          "oAria": {
+              "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+              "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+          },
+          "buttons": {
+              "copy": "Copiar",
+              "colvis": "Visibilidad"
+          }
+      },
+      buttons: [
+          'copyHtml5',
+          'excelHtml5',
+          'csvHtml5',
+          'pdfHtml5'
+      ]
+    });
+
+    table = $('#employeeSiteData').DataTable({
+      destroy: true,
+      serverSide: false,
+      dom: 'Blfrtip',
+      bAutoWidth: false,
+      language:
+      {
+          "sProcessing":     "Procesando...",
+          "sLengthMenu":     "Mostrar _MENU_ registros",
+          "sZeroRecords":    "No se encontraron resultados",
+          "sEmptyTable":     "Ningún dato disponible en esta tabla",
+          "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+          "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+          "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+          "sSearch":         "Buscar:",
+          "sInfoThousands":  ",",
+          "sLoadingRecords": "Cargando...",
+          "oPaginate": {
+              "sFirst":    "Primero",
+              "sLast":     "Último",
+              "sNext":     "Siguiente",
+              "sPrevious": "Anterior"
+          },
+          "oAria": {
+              "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+              "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+          },
+          "buttons": {
+              "copy": "Copiar",
+              "colvis": "Visibilidad"
+          }
+      },
+      "ajax": {
+        "url": url_images,
+        "type": "GET"
+      },
+      "columns": [
+          { "data": "site_id"},
+          { "data": "device_id"},
+          { "data": "device_name"},
+          { "data": "lenel_door"},
+          { 
+            "data": "procesado",
+            "render": function ( data ) {
+              return  data == true ? '<span style="font-size: 24px; color: green; text-align:center"><i color="green" class="fa fa-check"></i></span>' : '<span style="font-size: 24px; color: Red; text-align:center"><i color="red" class="fa fa-times"></i></span>'
+            },
+            "className": 'dt-body-center'
+          },
+          { "data": "uploadfoto_time"},
+          { "data": "passport_id"}
+      ],
+      buttons: [
+          'copy', 'excel'
+      ]
+    }); 
+
+
+
+    var tableBadges = $('#badgesData').DataTable({
+      dom: 'Blfrtip',
+      language:
+      {
+          "sProcessing":     "Procesando...",
+          "sLengthMenu":     "Mostrar _MENU_ registros",
+          "sZeroRecords":    "No se encontraron resultados",
+          "sEmptyTable":     "Ningún dato disponible en esta tabla",
+          "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+          "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+          "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+          "sSearch":         "Buscar:",
+          "sInfoThousands":  ",",
+          "sLoadingRecords": "Cargando...",
+          "oPaginate": {
+              "sFirst":    "Primero",
+              "sLast":     "Último",
+              "sNext":     "Siguiente",
+              "sPrevious": "Anterior"
+          },
+          "oAria": {
+              "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+              "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+          },
+          "buttons": {
+              "copy": "Copiar",
+              "colvis": "Visibilidad"
+          }
+      },
+      buttons: [
+          'copyHtml5',
+          'excelHtml5',
+          'csvHtml5',
+          'pdfHtml5'
+      ],
+      "columns": [
+          { "data": "badgeID" },
+          { "data": "activacion" },
+          { "data": "desactivacion" },
+          { "data": "estado" },
+      ]
+    });
+
+
+    var tableMarcaciones = $('#markData').DataTable({
+      dom: 'Blfrtip',
+      language:
+      {
+          "sProcessing":     "Procesando...",
+          "sLengthMenu":     "Mostrar _MENU_ registros",
+          "sZeroRecords":    "No se encontraron resultados",
+          "sEmptyTable":     "Ningún dato disponible en esta tabla",
+          "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+          "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+          "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+          "sSearch":         "Buscar:",
+          "sInfoThousands":  ",",
+          "sLoadingRecords": "Cargando...",
+          "oPaginate": {
+              "sFirst":    "Primero",
+              "sLast":     "Último",
+              "sNext":     "Siguiente",
+              "sPrevious": "Anterior"
+          },
+          "oAria": {
+              "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+              "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+          },
+          "buttons": {
+              "copy": "Copiar",
+              "colvis": "Visibilidad"
+          }
+      },
+      buttons: [
+          'copyHtml5',
+          'excelHtml5',
+          'csvHtml5',
+          'pdfHtml5'
+      ],
+      "columns": [
+          { "data": "badgeId" },
+          { "data": "eventTime" },
+          { "data": "panelId" },
+          { "data": "readerId" },
+      ]
+    });
+
+
+    var tablePermisos = $('#permisosData').DataTable({
+      dom: 'Blfrtip',
+      language:
+      {
+          "sProcessing":     "Procesando...",
+          "sLengthMenu":     "Mostrar _MENU_ registros",
+          "sZeroRecords":    "No se encontraron resultados",
+          "sEmptyTable":     "Ningún dato disponible en esta tabla",
+          "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+          "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+          "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+          "sSearch":         "Buscar:",
+          "sInfoThousands":  ",",
+          "sLoadingRecords": "Cargando...",
+          "oPaginate": {
+              "sFirst":    "Primero",
+              "sLast":     "Último",
+              "sNext":     "Siguiente",
+              "sPrevious": "Anterior"
+          },
+          "oAria": {
+              "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+              "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+          },
+          "buttons": {
+              "copy": "Copiar",
+              "colvis": "Visibilidad"
+          }
+      },
+      buttons: [
+          'copyHtml5',
+          'excelHtml5',
+          'csvHtml5',
+          'pdfHtml5'
+      ],
+      "columns": [
+          { "data": "panel" },
+          { "data": "panelID" },
+          { "data": "reader" },
+          { "data": "readerID" },
+      ]
+    });
+
+    // console.log("Cedula:" + cedula);
+    //lenelData(cedula);
+
+    
+  });
+    
+  
+
+
+  (function($, document) {
+
+    
+    // get tallest tab__content element
+    let height = -1;
+
+    $('.tab__content').each(function() {
+      height = height > $(this).outerHeight() ? height : $(this).outerHeight();
+        $(this).css('position', 'absolute');
+    });
+      
+      // set height of tabs + top offset
+    $('[data-tabs]').css('min-height', height + 40 + 'px');
+  
+  }(jQuery, document));
+</script>
+
+
+<script>
+  
+    function openImg(url) {
+      $("#capturedImage").attr("src",url);
+      $("#imgsModal").modal('show');
+      $("#imgsModal").css("z-index", "1500");
+    }
+
+    function openAnalisis(url) {
+      $("#statusModal").modal('show');
+      $("#statusModal").css("z-index", "1500");
+    }
+    
+</script>
+
+<!-- https://ongbogota2.ecopetrol.com.co/LenelServicesQABOG/api/hearthbeat/getstatus -->
+
+
+<script>
+
+  function dataconduit() {
+    status_lenel = $.ajax({
+        method: "GET",
+        url: "{{url_for('lenel_status')}}",   
+        dataType: "json",   
+        global: false,     // this makes sure ajaxStart is not triggered
+        }).done(function(data) {
+            // console.log(data);
+            // console.log(data.sucess);
+            lenelled = document.getElementById("lenel-status");
+
+            if (data.sucess == true) {
+              if (lenelled.classList.contains('led-red')) {
+                lenelled.classList.remove('led-red');
+                lenelled.classList.add('led-green');
+              }
+            } else {
+              if (lenelled.classList.contains('led-green')) {
+                lenelled.classList.remove('led-green');
+                lenelled.classList.add('led-red');
+              }
+            }
+
+        }).fail(function() {
+            alert("No fue posible consultar el servicio");
+    })
+    setTimeout(dataconduit, 5000);
+  }
+
+  dataconduit();
+</script>
+
+
+
+{% endblock %}

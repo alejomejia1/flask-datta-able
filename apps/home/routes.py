@@ -11,15 +11,17 @@ from jinja2 import TemplateNotFound, Environment, PackageLoader, select_autoesca
 from jinja_datatables.jinja_extensions.datatableext import DatatableExt
 from jinja_datatables.datatable_classes import DatatableColumn, AjaxDatatable, JSArrayDatatable, HTMLDatatable
 
-from apps.home.models import Invoice, Client, Contact, Project
 from apps.authentication.models import Users
-from apps.home.forms import NewInvoice, NewClient, NewContact, NewProject, UserForm
+from apps.home.models import *
+
+# from apps.home.forms import NewInvoice, NewClient, NewContact, NewProject, UserForm
 from apps.home.numero_letras import *
 
 from sqlalchemy.sql import func
 
 import locale
 import pdfkit
+import os
 
 from apps import db
 
@@ -33,59 +35,32 @@ from babel.numbers import format_number, format_decimal, format_currency
 @blueprint.route('/index')
 @login_required
 def index():
-    ds = Invoice.get_daily_total()
-    ms = Invoice.get_monthly_total()
-    ys = Invoice.get_yearly_total()
-    lf = Invoice.get_last_n(10)
-    ct = Client.get_cllients_total()
-    it = Invoice.invoices_this_year()
-    cty = Invoice.clients_this_year()
-    incomes = Invoice.query.join(Client).with_entities(Client.reference, func.sum(Invoice.valor)).group_by(Invoice.client_id).order_by(func.sum(Invoice.valor).desc()).all()
-    clientes = Client.get_clients_list()
-    ingresos = []
-    ingreso_labels = []
-    ingreso_values = []
-    for income in incomes:
-        data = [income[1]]
-        name = income[0]
-        ingreso = {
-            "name": income[0],
-            "data": data
-        }
-        ingresos.append(ingreso)
-        ingreso_labels.append(income[0])
-        ingreso_values.append(income[1])
-        
-    # my_chart = Chart("BarChart", "my-chart")   
-    # my_chart.options = {
-    #     "title": "Clientes",
-    #     "width": "100%",
-    #     "height": "400px",
-    # }
-    # my_chart.data.add_column("string", "Client")    
-    # my_chart.data.add_column("number", "Ingresos")
-    
-    # hdata = []
-    # for income in incomes:
-    #     my_chart.data.add_row([income[0], income[1]])
-    #     hdata.append(income[1])
+    regiones = Region.query.count()
+    instalaciones = Instalation.query.count()
+    empleados = Employee.query.count()
+    today = datetime.today().strftime('%Y-%m-%d')
+    today_start = today + ' 00:00:00'
+    today_end = today + ' 23:59:59'
+    tot_evn = UploadPerson.query.filter(UploadPerson.server_timestamp >= today_start).filter(UploadPerson.server_timestamp <= today_end).count()
+    tot_rec = UploadPerson.query.filter(UploadPerson.server_timestamp >= today_start).filter(UploadPerson.server_timestamp <= today_end).filter(UploadPerson.matched==1).count()
+    tot_ing =  UploadPerson.query.filter(UploadPerson.server_timestamp >= today_start).filter(UploadPerson.server_timestamp <= today_end).filter(UploadPerson.matched==1).filter(UploadPerson.device.has(direction=1)).count()
+    tot_sal =  UploadPerson.query.filter(UploadPerson.server_timestamp >= today_start).filter(UploadPerson.server_timestamp <= today_end).filter(UploadPerson.matched==1).filter(UploadPerson.device.has(direction=0)).count()
+    tot_by_ins = UploadPerson.query.filter(UploadPerson.server_timestamp >= today_start).filter(UploadPerson.server_timestamp <= today_end).filter(UploadPerson.matched==1).join(Device).with_entities(Device.site_id, Device.direction, func.count(Device.direction), func.count(UploadPerson.id)).group_by(Device.site_id, Device.direction).order_by(Device.site_id, Device.direction.desc()).all()
+    tot_by_type = UploadPerson.query.filter(UploadPerson.server_timestamp >= today_start).filter(UploadPerson.server_timestamp <= today_end).filter(UploadPerson.matched==1).distinct(UploadPerson.user_id).join(Employee).with_entities(Employee.tipo_employee, func.count(Employee.tipo_employee)).group_by(Employee.tipo_employee).all()
+    events = UploadPerson.get_all_by_date(today_start, today_end).all()
+    last_events = UploadPerson.query.with_entities(UploadPerson.server_timestamp, UploadPerson.user_id, UploadPerson.name, UploadPerson.device_id, Device.direction).filter(UploadPerson.user_id != '').filter(UploadPerson.server_timestamp >= today_start).join(Device).filter(Device.device_id == UploadPerson.device_id).group_by(UploadPerson.user_id, UploadPerson.name, UploadPerson.device_id, Device.direction, UploadPerson.server_timestamp).all()
+    contractor_still_inside = UploadPerson.query.with_entities(Device.site_id, UploadPerson.user_id, UploadPerson.name, UploadPerson.server_timestamp, UploadPerson.device_id, Device.direction).filter(UploadPerson.user_id != '').filter(UploadPerson.server_timestamp >= today_start).join(Device).filter(Device.device_id == UploadPerson.device_id).filter(Device.direction == 1).join(Employee).filter(Employee.tipo_employee.like('Contratista')).group_by(Device.site_id, UploadPerson.user_id, UploadPerson.name, UploadPerson.device_id, Device.direction, UploadPerson.server_timestamp)
+    visitor_still_inside = UploadPerson.query.with_entities(   UploadPerson.user_id.label('visitor_id'), UploadPerson.name.label('name'), func.max(UploadPerson.server_timestamp).label('server_timestamp'), UploadPerson.device_id.label('device_id'), Device.site_id.label('site_id'), Device.direction.label('user_id')).filter(UploadPerson.user_id != '').filter(UploadPerson.server_timestamp >= today_start).join(Device).filter(Device.device_id == UploadPerson.device_id).join(Employee).filter(Employee.tipo_employee.like('Visitante')).order_by(UploadPerson.server_timestamp.desc()).group_by(UploadPerson.user_id, UploadPerson.name, UploadPerson.device_id, Device.site_id, Device.direction, UploadPerson.server_timestamp).limit(1)
+    employee_still_inside = UploadPerson.query.with_entities(  Device.site_id, UploadPerson.user_id, UploadPerson.name, UploadPerson.server_timestamp, UploadPerson.device_id, Device.direction).filter(UploadPerson.user_id != '').filter(UploadPerson.server_timestamp >= today_start).join(Device).filter(Device.device_id == UploadPerson.device_id).filter(Device.direction == 1).join(Employee).filter(Employee.tipo_employee.like('Empleado')).group_by(Device.site_id, UploadPerson.user_id, UploadPerson.name, UploadPerson.device_id, Device.direction, UploadPerson.server_timestamp)
+
+    vi = visitor_still_inside.count()
+    ci = contractor_still_inside.count()
+    ei = employee_still_inside.count()
     
     
-    print(ds, ms)
-    return render_template('home/index.html', segment='index', ds = ds, ms=ms, ys=ys, lf=lf, ct=ct, it=it, cty=cty, n=10, ingresos=ingresos , ingreso_labels=ingreso_labels, ingreso_values= ingreso_values, clientes=clientes)
+    # tot_by_site_ing =  UploadPerson.query.filter(UploadPerson.server_timestamp >= '2023-02-22 00:00:00').filter(UploadPerson.server_timestamp <= today_end).filter(UploadPerson.matched==1).filter(UploadPerson.device.has(direction=1)).group_by(UploadPerson.site_id).all()
+    return render_template('home/index.html', segment='index', tot_evn=tot_evn, tot_rec=tot_rec, tot_ing=tot_ing, tot_sal=tot_sal, tot_by_ins=tot_by_ins, regiones=regiones, instalaciones=instalaciones, tot_by_type=tot_by_type, events=events, last_events=last_events, visitor_still_inside=visitor_still_inside.all(), contractor_still_inside=contractor_still_inside.all(), employee_still_inside=employee_still_inside.all())
 
-@blueprint.route('/invoices')
-@login_required
-def invoices():
-    lis = Invoice.get_last_n(100)
-    return render_template('home/invoices.html', segment='index', lis=lis)
-
-
-@blueprint.route('/projects')
-@login_required
-def projects():
-    projects = Project.query.all()
-    return render_template('home/projects.html', segment='index', projects=projects)
 
 @blueprint.route('/profile/<id>', methods=['GET', 'POST'])
 @login_required
@@ -101,245 +76,141 @@ def profile(id):
 
     return render_template('home/profile.html', segment='index', user=user, form=form)
 
-# @blueprint.route('/update_profile', methods=['POST'])
-# @login_required
-# def update_profile():
-#     locale.setlocale(locale.LC_ALL, 'es_CO.UTF8')
-#     # user = Users.query.get(current_user.id)
-#     user = session['form']['data']
-#     Users.update(user)
-#     db.session.commit()
-#     return redirect(url_for('home_blueprint.index'))
 
-@blueprint.route('/invoices_pdf/<id>')
+@blueprint.route('/contratistas', methods=['GET', 'POST'])
 @login_required
-def invoice_pdf(id):
-    locale.setlocale(locale.LC_ALL, 'es_CO.UTF8')
-    user = Users.query.filter(Users.id == current_user.id).first()
-    invoice = Invoice.query.filter(Invoice.id == id).first()
-    numeroLetras = numero_a_letras(invoice.valor) + " de Pesos"
-    fechaLetras = invoice.fecha_factura.strftime('%B %d  de %Y')
-    username = current_user.first_name + " " + current_user.last_name
-    valor = format_currency(invoice.valor,'COP',locale="es_CO")
-    rendered = render_template('pdf/invoice.html', segment='index', invoice=invoice, valor=valor, valor_letras = numeroLetras.capitalize(), fecha = fechaLetras.capitalize(), username = username)
-    options={
-        'page-size':'Letter',
-        'encoding' : 'UTF-8',
-        'enable-local-file-access': ''
-    }
-    file_name = '{0}-CC-{1}-{2}.pdf'.format(invoice.cliente.name, invoice.nfactura, datetime.today().strftime('%Y-%m-%d'))
-    pdf= pdfkit.from_string(rendered, False, options)
+def contratistas():
+    today = datetime.today().strftime('%Y-%m-%d')
+    today_start = today + ' 00:00:00'
+    contractor_still_inside = UploadPerson.query.with_entities(Device.site_id, UploadPerson.user_id, UploadPerson.name, UploadPerson.server_timestamp, UploadPerson.device_id, Device.direction).filter(UploadPerson.user_id != '').filter(UploadPerson.server_timestamp >= today_start).join(Device).filter(Device.device_id == UploadPerson.device_id).filter(Device.direction == 1).join(Employee).filter(Employee.tipo_employee.like('Contratista')).group_by(Device.site_id, UploadPerson.user_id, UploadPerson.name, UploadPerson.device_id, Device.direction, UploadPerson.server_timestamp)
+    return render_template('home/empleados.html', segment='index', contractor_still_inside=contractor_still_inside)
+
+@blueprint.route('/empleados', methods=['GET', 'POST'])
+@login_required
+def empleados():
+    today = datetime.today().strftime('%Y-%m-%d')
+    today_start = today + ' 00:00:00'
+    employee_still_inside = UploadPerson.query.with_entities(  Device.site_id, UploadPerson.user_id, UploadPerson.name, UploadPerson.server_timestamp, UploadPerson.device_id, Device.direction).filter(UploadPerson.user_id != '').filter(UploadPerson.server_timestamp >= today_start).join(Device).filter(Device.device_id == UploadPerson.device_id).filter(Device.direction == 1).join(Employee).filter(Employee.tipo_employee.like('Empleado')).group_by(Device.site_id, UploadPerson.user_id, UploadPerson.name, UploadPerson.device_id, Device.direction, UploadPerson.server_timestamp)
+    return render_template('home/empleados.html', segment='index', employee_still_inside=employee_still_inside)
+
+@blueprint.route('/visitantes', methods=['GET', 'POST'])
+@login_required
+def visitantes():
+    today = datetime.today().strftime('%Y-%m-%d')
+    today_start = today + ' 00:00:00'
+    today_end = today + ' 23:59:59'
     
-    response = make_response(pdf)
-    response.headers['Content-Type'] = 'application/pdf'
-    disposition  = 'inline; filename=' + file_name
-    response.headers['Content-Disposition'] = disposition
-    # attachment
-    return response
-
-
-@blueprint.route('/new_invoice', methods=['GET', 'POST'])
-@login_required
-def new_invoice():
-    print(current_user)
-    form = NewInvoice()
-    if form.validate_on_submit():
-        session['form'] = form.data
-        return redirect(url_for('home_blueprint.store_invoice'))
-    form.prefijo.data = "CC"    
-    form.nfactura.data = Invoice.get_last_invoice() + 1
-    form.user_id.data = current_user.id
-    form.status_id.data = 1
-    form.anulada.data = False
+    visitors = Visitor.query.filter(or_(and_(Visitor.fecha_inicial >= today_start, Visitor.fecha_inicial <= today_end), and_(Visitor.fecha2 >= today_start, Visitor.fecha2 <= today_end), and_(Visitor.fecha3 >= today_start, Visitor.fecha3 <= today_end)))
+    por_llegar = Visitor.query.filter(or_(and_(Visitor.fecha_inicial >= datetime.now(), Visitor.fecha_inicial <= today_end), and_(Visitor.fecha2>= datetime.now(), Visitor.fecha2 <= today_end), and_(Visitor.fecha3 >= datetime.now(), Visitor.fecha3 <= today_end)))
+    cvisitor = visitors.count()
+    c_por_llegar = por_llegar.count()
     
-    return render_template('home/form_new_invoice.html', segment='index', form=form)
+    info_visitors = []
+    count_ingresos = 0
+    for visitor in visitors.all():
+        events = UploadPerson.get_all_by_doc_and_date(visitor.numero_doc, today_start, today_end)
+        
+        
+        for event in events:
+            if event is not None and event.direction == 1:
+                count_ingresos = count_ingresos + 1
+                break
+            
+        info_visitor = {
+            'numero_doc': visitor.numero_doc,
+            'fullname': visitor.first_name + ' ' + visitor.last_name,
+            'instalaciones': visitor.instalaciones,
+            'events': events,
+            'company_id': visitor.company_id,
+            'funcionario': visitor.funcionario.name,
+            'emailFuncionario': visitor.funcionario.email,
+            'ingreso': True if visitor.instalaciones is not None else False
+        }
+        info_visitors.append(info_visitor)
     
-@blueprint.route('/new_client', methods=['GET', 'POST'])
+    visitor_still_inside = UploadPerson.query.with_entities(   UploadPerson.user_id.label('user_id'), UploadPerson.name.label('name'), func.max(UploadPerson.server_timestamp).label('server_timestamp'), UploadPerson.device_id.label('device_id'), Device.site_id.label('site_id'), Device.direction.label('direction')).filter(UploadPerson.user_id != '').filter(UploadPerson.server_timestamp >= today_start).join(Device).filter(Device.device_id == UploadPerson.device_id).join(Employee).filter(Employee.tipo_employee.like('Visitante')).order_by(UploadPerson.server_timestamp.desc()).group_by(UploadPerson.user_id, UploadPerson.name, UploadPerson.device_id, Device.site_id, Device.direction, UploadPerson.server_timestamp)
+    return render_template('home/visitantes.html', segment='index', visitors_data=visitors, visitor_still_inside=visitor_still_inside, info_visitors=info_visitors, cvisitor=cvisitor, count_ingresos=count_ingresos, c_por_llegar=c_por_llegar)
+
+
+@blueprint.route('/info/<cedula>')
 @login_required
-def new_client():
-    form = NewClient()
-    if form.validate_on_submit():
-        session['form'] = form.data
-        return redirect(url_for('home_blueprint.store_client'))
-    # form.user_id.data = current_user.id
-    return render_template('home/form_new_client.html', segment='index', form=form)
+def info(cedula):
+    """Acceso a la vista de informacion de un usuario identificado con un numero de documento enviado como parametro"""
+    print(f'Se obtiene la cédula')
+    cedula = cedula.split('.')[0]
+    print(f'Documento: {cedula}')
+    if cedula != 0 or cedula is not None:
+        print('Se obtiene usuario de enrolTemp...')
+        user = Employee.get_by_doc(cedula)
+        print('Consultando planta Personal ... ')
+        # empleado = PlantaPersonal.get_by_doc(cedula)
+        print('Consultando planta Contratistas ... ')
+        # contratista = PlantaContratistas.get_by_doc(cedula)
+        print('Leyendo Pasaportes ... ')
+        pasaportes = Passport.get_by_doc(cedula, 10)
+        print('Consultando  Empleados ... ')
+        employee = Employee.get_by_doc(cedula)
+        # print('Consultando  dispositivos con imagen ... ')
+        # sitesEmp=EmployeeSite.get_by_doc(cedula)
+        
+        # if app.config('CONSULTAR_LENEL'):
+        #     print('Consultando  datos lenel ... ')
+        #     datosLenel=lenel_data(cedula)
+        # else: 
+        #     datosLenel={}
+
+        # print('Consultando  datos lenel ... ')
+        # datosLenel=lenel_data(cedula)
+        # print('Consultando  Diagnostico ... ')  
+        # diag = diagnostico(cedula, None)
+        # print('Cargando regionales')
+        # regionales = get_regionales();
+        print('Renderizando informe.... ')
     
-@blueprint.route('/store_client')
-@login_required
-def store_client():
-    client = session['form']
-    store = Client.add_new(client)
-    return redirect(url_for('home_blueprint.index'))
 
-@blueprint.route('/edit_client/<id>', methods=['GET', 'POST'])
-@login_required
-def edit_client(id):
-    print(current_user)
-    client = Client.query.get(id)
-    form = NewClient()
-    if form.validate_on_submit():
-        session['form'] = form.data
-        return redirect(url_for('home_blueprint.update_client', id = client.id))
-    if request.method == 'GET':
-        form.name.data = client.prefijo
-        form.user_id.data = client.nfactura
-        form.reference.data = client.reference
-        form.email.data = client.email
-        form.phone.data = client.phone
-        form.address.data = client.address
-        form.nit.data = client.nit
-
-    return render_template('home/form_edit_client.html', segment='index', form=form, id = client.id)
-
-@blueprint.route('/update_client/<id>')
-@login_required
-def update_client(id):
-    locale.setlocale(locale.LC_ALL, 'es_CO.UTF8')
-    client = Client.query.get(id)
-    client.name = session["form"]["name"]
-    client.reference = session["form"]["reference"]
-    client.email = session["form"]["email"]
-    client.phone = session["form"]["phone"]
-    client.address = session["form"]["address"]
-    client.nit = session["form"]["nit"]
-    Client.update(client)
-    db.session.commit()
-    return redirect(url_for('home_blueprint.clients'))
-
-@blueprint.route('/new_contact', methods=['GET', 'POST'])
-@login_required
-def new_contact():
-    form = NewContact()
-    if form.validate_on_submit():
-        session['form'] = form.data
-        return redirect(url_for('home_blueprint.store_contact'))
-    # form.user_id.data = current_user.id
-    return render_template('home/form_new_contact.html', segment='index', form=form)
-    
-@blueprint.route('/store_contact')
-@login_required
-def store_contacct():
-    contact = session['form']
-    store = Contact.add_new(contact)
-    return redirect(url_for('home_blueprint.contacts'))
-
-@blueprint.route('/edit_contact/<id>', methods=['GET', 'POST'])
-@login_required
-def edit_contact(id):
-    print(current_user)
-    contact = Contact.query.get(id)
-    form = NewContact()
-    if form.validate_on_submit():
-        session['form'] = form.data
-        return redirect(url_for('home_blueprint.update_contact', id = contact.id))
-    if request.method == 'GET':
-        form.name.data = contact.name
-        form.user_id.data = contact.user_id
-        form.client_id.data = contact.client_id
-        form.cellphone.data = contact.cellphone
-        form.email.data = contact.email
-        form.address.data = contact.address
-    return render_template('home/form_edit_contact.html', segment='index', form=form, id = contact.id)
-
-@blueprint.route('/update_contact/<id>')
-@login_required
-def update_contact(id):
-    locale.setlocale(locale.LC_ALL, 'es_CO.UTF8')
-    contact = Contact.query.get(id)
-    contact.name = session["form"]["name"]
-    contact.email = session["form"]["email"]
-    contact.cellphone = session["form"]["cellhone"]
-    contact.address = session["form"]["address"]
-    contact.client_id = session["form"]["client_id"]
-    contact.user_id = session["form"]["user_id"]
-    
-    Contact.update(contact)
-    db.session.commit()
-    return redirect(url_for('home_blueprint.contacts'))
-
-
-@blueprint.route('/new_project', methods=['GET', 'POST'])
-@login_required
-def new_project():
-    form = NewProject()
-    if form.validate_on_submit():
-        session['form'] = form.data
-        return redirect(url_for('home_blueprint.store_project'))
-    # form.user_id.data = current_user.id
-    return render_template('home/form_new_project.html', segment='index', form=form)
-    
-@blueprint.route('/store_project')
-@login_required
-def store_project():
-    project = session['form']
-    store = Project.add_new(project)
-    return redirect(url_for('home_blueprint.index'))
-
-  
-@blueprint.route('/edit_invoice/<id>', methods=['GET', 'POST'])
-@login_required
-def edit_invoice(id):
-    print(current_user)
-    invoice = Invoice.query.filter(Invoice.id == id).first()
-    form = NewInvoice()
-    if form.validate_on_submit():
-        session['form'] = form.data
-        return redirect(url_for('home_blueprint.update_invoice', id = invoice.id))
-    if request.method == 'GET':
-        # form.id.data  = invoice.id
-        form.prefijo.data = invoice.prefijo
-        form.nfactura.data = invoice.nfactura
-        form.client_id.data  = invoice.client_id
-        form.user_id.data  = invoice.user_id
-        form.fecha_factura.data  = invoice.fecha_factura
-        form.fecha_vencimiento.data  = invoice.fecha_vencimiento
-        form.fecha_proximo_pago.data  = invoice.fecha_proximo_pago
-        form.concept.data  = invoice.concept
-        form.observaciones.data  = invoice.observaciones
-        form.status_id.data  = invoice.status_id
-        form.valor.data  = invoice.valor
-
-    return render_template('home/form_edit_invoice.html', segment='index', form=form, id = invoice.id)
-
-@blueprint.route('/update_invoice/<id>')
-@login_required
-def update_invoice(id):
-    locale.setlocale(locale.LC_ALL, 'es_CO.UTF8')
-    invoice = Invoice.query.filter(Invoice.id == id).first()
-    invoice.prefijo = session["form"]["prefijo"]
-    invoice.client_id = session["form"]["client_id"]
-    invoice.user_id = session["form"]["user_id"]
-    invoice.fecha_factura = session["form"]["fecha_factura"]
-    invoice.fecha_vencimiento = session["form"]["fecha_vencimiento"]
-    invoice.fecha_proximo_pago = session["form"]["fecha_proximo_pago"]
-    invoice.concept = session["form"]["concept"]
-    invoice.observaciones = session["form"]["observaciones"]
-    invoice.status_id = session["form"]["status_id"]
-    invoice.valor = locale.atof(session["form"]["valor"].strip("$"))
-    Invoice.update(invoice)
-    db.session.commit()
-    return redirect(url_for('home_blueprint.index'))
-
-@blueprint.route('/store_invoice')
-@login_required
-def store_invoice():
-    invoice = session['form']
-    store = Invoice.add_new(invoice)
-    return redirect(url_for('home_blueprint.index'))
-
-@blueprint.route('/clients')
-@login_required
-def clients():
-    clients = Client.query.all()
-    return render_template('home/clients.html', segment='index', clients=clients)
-
-@blueprint.route('/contacts')
-@login_required
-def contacts():
-    contacts = Contact.query.all()
-    return render_template('home/contacts.html', segment='index', contacts=contacts)
-
-
+        #print(pasaportes.end_date)
+        # data = EnrolTemp.query.filter_by(numero_doc=cedula).first()
+        imagen= cedula + ".jpg"
+        apikey= os.getenv("APIKEY")
+        return render_template(
+            "home/info.html",
+            imagen=imagen,
+            enrolTemp=user,
+            # registros=registros,
+            # terminados=terminados,
+            # ultimo=ultimo,
+            empleado=empleado,
+            # contratista=contratista,
+            # transacciones=transacciones,
+            cedula=cedula,
+            pasaportes=pasaportes,
+            employee=employee,
+            # sites=sitesEmp,
+            apikey=apikey,
+            # datosLenel=json.loads(datosLenel),
+            # diagnostico=diag,
+            # regionales = regionales.json
+            # terminos=terminos
+        )
+    else:
+        return render_template(
+            "home/info.html",
+            imagen=None,
+            enrolTemp=None,
+            registros=None,
+            terminados=None,
+            ultimo=None,
+            empleado=None,
+            contratista=None,
+            # transacciones=None,
+            cedula=None,
+            pasaportes=None,
+            employee=None,
+            # sites=None,
+            apikey=None
+        )
+        
+        
 @blueprint.route('/<template>')
 @login_required
 def route_template(template):

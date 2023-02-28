@@ -19,7 +19,7 @@
                             <div class="row align-items-center">
                                 <div class="col-md-12">
                                     <div class="page-header-title">
-                                        <h5 class="m-b-10">Clientes </h5>
+                                        <h5 class="m-b-10">Contratistas al interior de las instalaciones </h5>
                                     </div>
                                     <!--
                                     <ul class="breadcrumb">
@@ -40,20 +40,20 @@
                                 <table id="data" class="table table-striped">
                                     <thead>
                                       <tr>
-                                        <th>NIT</th>
+                                        <th>Instalacion</th>
+                                        <th>Identificacion</th>
                                         <th>Nombre</th>
-                                        <th>Telefono</th>
-                                        <th>email</th>
+                                        <th>Hora Ingreso</th>
                                         
                                       </tr>
                                     </thead>
                                     <tbody>
-                                      {% for client in clients %}
+                                      {% for contractor in contractor_still_inside %}
                                         <tr>
-                                          <td>{{ client.nit }}</td>
-                                          <td>{{ client.name }}</td>
-                                          <td>{{ client.phone }}</td>
-                                          <td>{{ client.email }}</td>
+                                          <td>{{ contractor[0] }}</td>
+                                          <td>{{ contractor[1] }}</td>
+                                          <td>{{ contractor[2] }}</td>
+                                          <td>{{ contractor[3].strftime('%Y-%m-%d  %H:%M:%S' ) }}</td>
                                           
                                         </tr>
                                       {% endfor %}

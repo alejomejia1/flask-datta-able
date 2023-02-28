@@ -1,0 +1,84 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Clientes {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <!-- [ Main Content ] start -->
+    <div class="pcoded-main-container">
+        <div class="pcoded-wrapper">
+
+            <div class="pcoded-content">
+                <div class="pcoded-inner-content">
+                    <!-- [ breadcrumb ] start -->
+                    <div class="page-header">
+                        <div class="page-block">
+                            <div class="row align-items-center">
+                                <div class="col-md-12">
+                                    <div class="page-header-title">
+                                        <h5 class="m-b-10">Empleados al interior de las instalaciones </h5>
+                                    </div>
+                                    <!--
+                                    <ul class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="javascript:">Form Componants</a></li>
+                                        <li class="breadcrumb-item"><a href="javascript:">Form Elements</a></li>
+                                    </ul>
+                                    -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- [ breadcrumb ] end -->
+                    <div class="main-body">
+                        <div class="page-wrapper">
+                            <div class="row">
+
+                                <table id="data" class="table table-striped">
+                                    <thead>
+                                      <tr>
+                                        <th>Instalacion</th>
+                                        <th>Identificacion</th>
+                                        <th>Nombre</th>
+                                        <th>Hora Ingreso</th>
+                                        
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {% for employee in employee_still_inside %}
+                                        <tr>
+                                          <td>{{ employee[0] }}</td>
+                                          <td>{{ employee[1] }}</td>
+                                          <td>{{ employee[2] }}</td>
+                                          <td>{{ employee[3].strftime('%Y-%m-%d  %H:%M:%S' ) }}</td>
+                                          
+                                        </tr>
+                                      {% endfor %}
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- [ Main Content ] end -->
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script>
+    $(document).ready(function () {
+      $('#data').DataTable();
+    });
+  </script>
+
+{% endblock javascripts %}

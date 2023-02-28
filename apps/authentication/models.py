@@ -3,7 +3,7 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 
-from flask import jsonify
+from flask import jsonify, current_app
 from flask_login import UserMixin
 import sys
 
@@ -11,11 +11,16 @@ import sys
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, Column, String, Integer, UniqueConstraint
+
+from dataclasses import dataclass
 
 from re import sub
 from decimal import Decimal
 import locale
+import hashlib
+
+from unidecode import unidecode
 
 from flask_dance.consumer.storage.sqla import OAuthConsumerMixin
 
@@ -24,6 +29,12 @@ from apps import db, login_manager
 from apps.authentication.util import hash_pass
 
 from datetime import datetime
+
+# from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
+from itsdangerous.url_safe import URLSafeTimedSerializer as Serializer
+from itsdangerous import SignatureExpired, BadSignature
+
+
 
 class InvalidUsage(Exception):
     status_code = 400
@@ -40,9 +51,10 @@ class InvalidUsage(Exception):
         rv['message'] = self.message
         return rv
 
-
+            
+        
 class Users(db.Model, UserMixin):
-
+    
     __tablename__ = 'users'
 
     id            = db.Column(db.Integer, primary_key=True)
@@ -116,6 +128,22 @@ class Users(db.Model, UserMixin):
             error = str(e.__dict__['orig'])
             raise InvalidUsage(error, 422)
         return
+    
+    def generate_auth_token(self, expiration = 600):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        return s.dumps({ 'id': self.id })
+    
+    @staticmethod
+    def verify_auth_token(token):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except SignatureExpired:
+            return None # valid token, but expired
+        except BadSignature:
+            return None # invalid token
+        user = Users.query.get(data['id'])
+        return user
 
 @login_manager.user_loader
 def user_loader(id):
@@ -126,10 +154,14 @@ def request_loader(request):
     username = request.form.get('username')
     user = Users.query.filter_by(username=username).first()
     return user if user else None
+    
+    
+
+    # username = request.form.get('username')
+    # user = Users.query.filter_by(username=username).first()
+    # return user if user else None
 
 class OAuth(OAuthConsumerMixin, db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="cascade"), nullable=False)
     user = db.relationship(Users)
-
-
 

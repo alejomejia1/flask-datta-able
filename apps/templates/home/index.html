@@ -36,22 +36,118 @@
                         <div class="page-wrapper">
                             <!-- [ Main Content ] start -->
                             <div class="row">
-                                <div class="col-md-12 col-xl-12">
-                                    <div class="card daily-sales">
-                                        
-                                        <div class="card-block" style="text-align: right;">
-                                            <h6 class="mb-4" style="text-align: left;">Acciones rapidas</h6>
-                                            <!-- <div class="">
-                                                <div><a href="/new_invoice" class="nav-link"><span class=""><i class="feather icon-edit text-c-blue f-50 m-r-10"></i></span></a></div>
-                                                <div><a href="/new_contact" class="nav-link"><span class="pcoded-micon"><i class="feather icon-user-plus text-c-blue f-50 m-r-10"></i></span></a></div>
-                                            </div> -->
-                                            <div class="icon-bar i-block" style="padding-right:20px; padding-bottom:10px">
-                                                <a class="active" href="/new_invoice"><i class="fa fa-edit fa-4x" title="Nueva cuenta de cobro"></i></a>
-                                                <a href="/new_contact"><i class="fa fa-user fa-4x" title="Nuevo contacto"></i></a>
-                                                <a href="/new_client"><i class="fa fa-building fa-4x" title="Nuevo cliente"></i></a>
-                                                <a href="/new_project"><i class="fa fa-tasks fa-4x" title="Nuevo proyecto"></i></a>
-                                              </div>
-                                              <!-- <br> -->
+                                <div class="col-sm-4 col-md-2 col-xl-2">
+                                    <div class="card daily-stats">
+                                        <div class="card-block">
+                                            <h6 class="mb-4">Regiones</h6>
+                                            
+                                            {{ regiones }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 col-md-3 col-xl-3">
+                                    <div class="card daily-stats">
+                                        <div class="card-block">
+                                            <h6 class="mb-4">Instalaciones</h6>
+                                            
+                                            {{ instalaciones }}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-4 col-md-4 col-xl-4">
+                                    <div class="card daily-stats">
+                                        <div class="card-block">
+                                            <h6 class="mb-4">Estadisticas del dia</h6>
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <td> </td>
+                                                            <td> </td>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <!--<tr> <td> Eventos </td> <td style="text-align:right"> {{ tot_evn }}</td></tr>-->
+                                                        <tr> <td> Reconocimientos </td> <td style="text-align:right"> {{ tot_rec }}</td></tr>
+                                                        <tr> <td> No reconocidos </td> <td style="text-align:right"> {{ tot_evn - tot_rec }}</td></tr>
+                                                        <tr> <td> Ingresos </td> <td style="text-align:right"> {{ tot_ing }}</td></tr>
+                                                        <tr> <td> Salidas </td> <td style="text-align:right"> {{ tot_sal }}</td></tr>
+                                                    </tbody>
+                                                    
+                                                </table>
+                                    
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-12 col-md-4 col-xl-4">
+                                    <div class="card daily-stats">
+                                        <div class="card-block">
+                                            <h6 class="mb-4">Estadisticas por instalación</h6>
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <td> Instalacion </td>
+                                                            <td> Ingresos </td>
+                                                            <td> Salidas </td>
+                                                            <td> Al interior </td>
+
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% set lastSite = None %}
+                                                        {% set ns = namespace() %}
+                                                        {% set ns.lastSite=None %}
+                                                        {% set ns.siteIng=0 %}
+                                                        {% set ns.siteExit=0 %}
+
+                                                        {% for instalacion in tot_by_ins %}
+                                                            {% set siteId = instalacion.site_id %}
+                                                            {%if (siteId == ns.lastSite)%}
+                                                                {% set ns.siteExit = instalacion[2] %}
+                                                                <tr> 
+                                                                    <td style="text-align:left"> {{ instalacion.site_id }}</td>
+                                                                    <td style="text-align:center"> {{ ns.siteIng }}</td>
+                                                                    <td style="text-align:center"> {{ ns.siteExit }}</td>
+                                                                    <td style="text-align:center"> {{ ns.siteIng - ns.siteExit }}</td>
+                                                                </tr>
+                                                            {% else %}
+                                                                {% set ns.siteIng = instalacion[2] %}
+                                                                {% set ns.lastSite = siteId %}
+                                                                {% set ns.siteExit = 0 %}
+                                                            {% endif %}
+                                                    
+                                                        {% endfor %}
+                                                    </tbody>
+                                                    
+                                                </table>
+                                    
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 col-md-4 col-xl-4">
+                                    <div class="card daily-stats">
+                                        <div class="card-block">
+                                            <h6 class="mb-4"> Reconocimientos por Tipo Persona</h6>
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <td> </td>
+                                                        <td> </td>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for tipo in tot_by_type%}
+                                                        <tr> <td> {{ tipo[0] }} </td> <td style="text-align:right"> {{ tipo[1] }}</td></tr>
+                                                    {% endfor %}
+                            
+                                                </tbody>
+                                                
+                                            </table>
                                             
                                         </div>
                                     </div>
@@ -59,16 +155,54 @@
                                 
                             </div>
                             <div class="row">
-                                <!--[ daily sales section ] start-->
-                                <div class="col-md-6 col-xl-4">
+                                <div class="col-sm-12 col-md-12 col-xl-12">
                                     <div class="card daily-sales">
                                         <div class="card-block">
-                                            <h6 class="mb-4">Facturación diaria</h6>
+                                            <h6 class="mb-4"> Ingresos y Salidas del dia</h6>
+                                            <table id="data" class="table table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <td> Fecha/Hora </td>
+                                                        <td> Instalacion </td>
+                                                        <td> Tipo Evento </td>
+                                                        <td> Tipo Persona</td>
+                                                        <td> Nombre </td>
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for event in events %}
+                                                        <tr> 
+                                                            <td> {{ event.server_timestamp }} </td> 
+                                                            <td> {{ event.device.site_id }}</td>
+                                                            {% if event.device.direction %}
+                                                                <td color="green"> Entrada </td>
+                                                            {% else %}
+                                                                <td color="red"> Salida </td>
+                                                            {% endif %}
+                                                            <td> {{ event.persona.tipo_employee }}</td>
+                                                            <td> {{ event.name }}</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                    
+                                                </tbody>
+                                            </table>    
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                                <!--[ daily sales section ] start-->
+                                <!--
+                                <div class="col-sm-12 col-md-6 col-xl-4">
+                                    <div class="card daily-sales">
+                                        <div class="card-block">
+                                            <h6 class="mb-4">Total Ingresos</h6>
                                             <div class="row d-flex align-items-center">
                                                 <div class="col-9">
                                                     <h3 class="f-w-300 d-flex align-items-center m-b-0"><i
                                                             class="feather icon-arrow-up text-c-green f-30 m-r-10"></i>
-                                                            {{ "${:,.2f}".format(ds) }}</h3>
+                                                            </h3>
                                                 </div>
 
                                                 <div class="col-3 text-right">
@@ -83,8 +217,10 @@
                                         </div>
                                     </div>
                                 </div>
+                                -->
                                 <!--[ daily sales section ] end-->
                                 <!--[ Monthly  sales section ] starts-->
+                                <!--
                                 <div class="col-md-6 col-xl-4">
                                     <div class="card Monthly-sales">
                                         <div class="card-block">
@@ -93,7 +229,7 @@
                                                 <div class="col-9">
                                                     <h3 class="f-w-300 d-flex align-items-center  m-b-0"><i
                                                             class="feather icon-arrow-down text-c-red f-30 m-r-10"></i>
-                                                            {{ "${:,.2f}".format(ms) }}</h3>
+                                                            </h3>
                                                 </div>
                                                 <div class="col-3 text-right">
                                                     <p class="m-b-0"></p>
@@ -107,8 +243,10 @@
                                         </div>
                                     </div>
                                 </div>
+                                -->
                                 <!--[ Monthly  sales section ] end-->
                                 <!--[ year  sales section ] starts-->
+                                <!--
                                 <div class="col-md-12 col-xl-4">
                                     <div class="card yearly-sales">
                                         <div class="card-block">
@@ -117,7 +255,7 @@
                                                 <div class="col-9">
                                                     <h3 class="f-w-300 d-flex align-items-center  m-b-0"><i
                                                             class="feather icon-arrow-up text-c-green f-30 m-r-10"></i>
-                                                            {{ "${:,.2f}".format(ys) }}</h3>
+                                                            </h3>
                                                 </div>
                                                 <div class="col-3 text-right">
                                                     <p class="m-b-0"></p>
@@ -131,6 +269,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                -->
                                 <!--[ year  sales section ] end-->
 
                             </div>  
@@ -140,6 +279,8 @@
 
                             <div class="row">
                                 <!--[ Recent Users ] start-->
+
+                                <!--
                                 <div class="col-xl-8 col-md-6">
                                     <div class="card Recent-Users">
                                         <div class="card-header">
@@ -165,9 +306,11 @@
                                         </div>
                                     </div>
                                 </div>
+                                -->
                                 <!--[ Recent Users ] end-->
 
                                 <!-- [ statistics year chart ] start -->
+                                <!--
                                 <div class="col-xl-4 col-md-6">
                                     <div class="card card-event">
                                         <div class="card-block">
@@ -209,10 +352,11 @@
                                         </div>
                                     </div>
                                 </div>
+                                -->
                                 <!-- [ statistics year chart ] end -->
                                 
                                 
-                                
+                                <!--
                                 <div class="row">
                                     <div class="col-xl-12 col-md-12">
                                         <div class="card">
@@ -225,7 +369,7 @@
                                         </div>
                                     </div>
                                 </div>
-            
+                                -->
                             <!-- [ Main Content ] end -->
                         </div>
                     </div>
@@ -317,5 +461,12 @@
         });
 
     </script>
+
+    <script>
+        $(document).ready(function () {
+            $('#data').DataTable();
+        });
+    </script>
+
 
 {% endblock javascripts %}
