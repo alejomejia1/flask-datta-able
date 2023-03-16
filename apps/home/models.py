@@ -460,6 +460,10 @@ class Employee(db.Model):
         self.visitante = visitante
         self.created = created
         self.updated = updated
+        
+    @hybrid_property
+    def fullname(self):
+        return self.first_name + " " + self.last_name
 
     @staticmethod
     def get_by_doc(numero_doc):

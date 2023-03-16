@@ -241,3 +241,81 @@ def searchVisitors():
     
     return jsonify(data)
 
+
+@blueprint.route('/api/search_employee')
+@token_required
+def searchEmployees():
+    
+    params = json.loads(request.data)
+    
+    if 'name' in params:
+        name = params['name']
+    else: 
+        name = None
+
+    if 'numero_doc' in params:
+        numero_doc = params['numero_doc']
+    else:
+        numero_doc = None
+        
+    if 'tipo_empleado' in params:
+        tipo_employee = params['tipo_empleado']
+    else:
+        tipo_employee = None
+    
+    if 'email' in params:
+        email = params['email']
+    else:
+        email = None
+
+    filters = []
+    
+    if name is not None:
+        filters.append(or_(Employee.first_name.like(name), Employee.last_name.like(name), Employee.fullname.like(name)))
+
+    if numero_doc is not None:
+        filters.append(Employee.numero_doc == numero_doc)
+    
+    if tipo_employee is not None:
+        filters.append(Employee.tipo_employee == tipo_employee)
+    
+    if email is not None:
+        filters.append(Employee.email == email)
+        
+    employees = Employee.query.filter(*filters).all()
+
+    data = []
+    for employee in employees:
+        dat = {
+            'id': employee.id,
+            'first_name': employee.first_name,
+            'last_name': employee.last_name,
+            'fullname': employee.fullname,
+            'email': employee.email,
+            'numero_doc': employee.numero_doc,
+            'tipo_employee': employee.tipo_employee,
+            'company_id': employee.company_id
+        }
+        data.append(dat)
+        
+    return jsonify(data)
+
+
+
+@blueprint.route('/api/get_ubicaciones')
+@token_required
+def getUbicaciones():
+        
+    ubicaciones = Ubicacion.query.all()
+
+    data = []
+    for ubicacion in ubicaciones:
+        dat = {
+            'id': ubicacion.id,
+            'ubicacion': ubicacion.ubicacion,
+            'sigla': ubicacion.sigla,
+            'region_id': ubicacion.region_id,
+        }
+        data.append(dat)
+        
+    return jsonify(data)
